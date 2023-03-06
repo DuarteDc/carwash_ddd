@@ -97,14 +97,15 @@ const CustomerSchema = new Schema<CustomerEntity>({
     // }
 },
     {
-        timestamps: true
-    }
+        timestamps: true,
+        versionKey: false,
+    },
 );
 
-// CustomerSchema.method('toJSON', function () {
-//     const { __v, password, ...client } = this.toObject();
-//     return client;
-// });
+CustomerSchema.method('toJSON', function () {
+    const { __v, password, ...client } = this.toObject();
+    return client;
+});
 
 CustomerSchema.plugin(mongoosePaginate);
 

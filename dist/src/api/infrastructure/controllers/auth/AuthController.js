@@ -43,5 +43,11 @@ class AuthController extends ResponseData_1.ResponseData {
             }
         });
     }
+    loginWithGoogle(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { idToken } = req.body;
+            const response = yield this.authUseCase.signInWithGoogle(idToken);
+        });
+    }
 }
 exports.AuthController = AuthController;

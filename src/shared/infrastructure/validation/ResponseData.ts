@@ -1,11 +1,11 @@
 import { Response, NextFunction } from 'express';
 import { CustomerEntity } from '../../../api/domain/customer/CustomerEntity';
 import { ErrorHandler } from '../../domain/ErrorHandler';
+import { ICustomerAuth } from '../../../api/infrastructure/authentication/Authentication';
 
 export class ResponseData {
 
-
-    private successResponse(res: Response, code: number = 200, data: ErrorHandler | CustomerEntity | null, message: string): void {
+    private successResponse(res: Response, code: number = 200, data: ErrorHandler | ICustomerAuth | null, message: string): void {
         res.status(code).json({ data, message });
     }
 
@@ -13,7 +13,7 @@ export class ResponseData {
         next(errorType);
     }
 
-    public invoke(data: ErrorHandler | CustomerEntity | null, code: number, res: Response, message: string, next: NextFunction) {
+    public invoke(data: ErrorHandler | ICustomerAuth | null, code: number, res: Response, message: string, next: NextFunction) {
         if (data instanceof ErrorHandler) 
             return this.badResponse(data, next);
         

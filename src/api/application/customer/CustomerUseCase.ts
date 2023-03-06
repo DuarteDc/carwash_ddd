@@ -18,7 +18,7 @@ export class CustomerUseCase {
 
     public async createNewCustomer(fullname: String, email: String, pass: Buffer): Promise<CustomerEntity | ErrorHandler | null> {
 
-        const customer = await this.customerRepository.findOne({ email });
+        const customer = await this.customerRepository.findOneItem({ email });
         if (customer) return new ErrorHandler('El usuario ya ha sido registrado', 400);
         const salt = bcrypt.genSaltSync();
         const password = bcrypt.hashSync(pass, salt);

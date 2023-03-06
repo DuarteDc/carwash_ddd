@@ -18,12 +18,12 @@ class CustomerRepository extends MongoRepository_1.MongoRepository {
     }
     findOneCustomer(query) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.findOne(query);
+            return yield this.findOneItem(query);
         });
     }
     findByEmailCustomer(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.findOne({ email });
+            return yield this.findOneItem({ email });
         });
     }
     findByIdCustomer(_id) {
@@ -41,7 +41,7 @@ class CustomerRepository extends MongoRepository_1.MongoRepository {
             return yield this.findAll();
         });
     }
-    createOne(body) {
+    createOneCustomer(body) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.createOne(body);
         });

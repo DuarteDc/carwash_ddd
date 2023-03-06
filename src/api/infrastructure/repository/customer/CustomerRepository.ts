@@ -13,11 +13,11 @@ export class CustomerRepository extends MongoRepository implements CustomerConfi
     }
 
     async findOneCustomer(query: Object): Promise<CustomerEntity | null> {
-        return await this.findOne(query);
+        return await this.findOneItem(query);
     }
 
     async findByEmailCustomer(email: String): Promise<CustomerEntity | null> {
-        return await this.findOne({ email });
+        return await this.findOneItem({ email });
     }
 
     async findByIdCustomer(_id: String): Promise<CustomerEntity | null> {
@@ -30,7 +30,7 @@ export class CustomerRepository extends MongoRepository implements CustomerConfi
         return await this.findAll();
     }
 
-    async createOne(body: Object): Promise<CustomerEntity | null> {
+    async createOneCustomer(body: Object): Promise<CustomerEntity | null> {
         return await this.createOne(body);
     }
 

@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MongoRepository = void 0;
-const mongoose_1 = require("mongoose");
 class MongoRepository {
     constructor(MODEL) {
         this.MODEL = MODEL;
@@ -32,12 +31,12 @@ class MongoRepository {
     }
     createOne(body) {
         return __awaiter(this, void 0, void 0, function* () {
-            const newObject = new mongoose_1.Model(body);
+            const newObject = new this.MODEL(body);
             yield newObject.save();
             return newObject;
         });
     }
-    findOne(query) {
+    findOneItem(query) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.MODEL.findOne(query);
         });

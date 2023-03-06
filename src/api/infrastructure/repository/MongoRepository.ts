@@ -1,4 +1,4 @@
-import { Model, Document, Schema } from "mongoose";
+import { Model, Document } from 'mongoose';
 
 
 export abstract class MongoRepository {
@@ -22,12 +22,12 @@ export abstract class MongoRepository {
     }
 
     public async createOne(body: Object): Promise<any> {
-        const newObject = new Model(body);
+        const newObject = new this.MODEL(body);
         await newObject.save()
         return newObject;
     }
 
-    public async findOne(query: Object): Promise<any> {
+    public async findOneItem(query: Object): Promise<any> {
         return await this.MODEL.findOne(query);
     }
 

@@ -16,6 +16,7 @@ export type Configuration = {
     APP_DATABASE_URL    :   string;
     APP_LOG_LEVEL       :   string;
     SECRET_JWT_KEY      :   string;
+    GOOGLE_CLIENT_ID    :   string;
 };
 
 

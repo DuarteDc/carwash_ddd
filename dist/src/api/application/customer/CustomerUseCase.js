@@ -31,7 +31,7 @@ class CustomerUseCase {
     }
     createNewCustomer(fullname, email, pass) {
         return __awaiter(this, void 0, void 0, function* () {
-            const customer = yield this.customerRepository.findOne({ email });
+            const customer = yield this.customerRepository.findOneItem({ email });
             if (customer)
                 return new ErrorHandler_1.ErrorHandler('El usuario ya ha sido registrado', 400);
             const salt = bcrypt_1.default.genSaltSync();

@@ -15,15 +15,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthUseCase = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const ErrorHandler_1 = require("../../../shared/domain/ErrorHandler");
-const AuthPresenter_1 = require("../../infrastructure/presenters/AuthPresenter");
-class AuthUseCase extends AuthPresenter_1.AuthPresenter {
+const Authentication_1 = require("../../infrastructure/authentication/Authentication");
+class AuthUseCase extends Authentication_1.Authentication {
     constructor(customerRespository) {
         super();
         this.customerRespository = customerRespository;
     }
     signIn(email, password) {
         return __awaiter(this, void 0, void 0, function* () {
-            let customer = yield this.customerRespository.findOne({ email });
+            let customer = yield this.customerRespository.findOneItem({ email });
             if (!customer)
                 return new ErrorHandler_1.ErrorHandler('El usuario o contraseña no son validos', 400);
             const validatePassword = bcrypt_1.default.compareSync(password, customer.password);
@@ -34,16 +34,26 @@ class AuthUseCase extends AuthPresenter_1.AuthPresenter {
     }
     signUp(body) {
         return __awaiter(this, void 0, void 0, function* () {
-            let customer = yield this.customerRespository.findOne({ email: body.email });
+            let customer = yield this.customerRespository.findOneItem({ email: body.email });
             if (customer)
                 return new ErrorHandler_1.ErrorHandler('El usuario ya ha sido registrado', 400);
-            customer = yield this.customerRespository.createOne(body);
-            const salt = bcrypt_1.default.genSaltSync();
-            const pass = Object.assign(Object.assign({}, customer), { password: bcrypt_1.default.hashSync(customer.password, salt) });
-            console.log(customer);
-            customer = yield this.customerRespository.updateOne(customer._id, { password: pass }, { new: true });
-            console.log(customer);
+            const password = yield this.encryptPassword(body.password);
+            customer = yield this.customerRespository.createOne(Object.assign(Object.assign({}, body), { password }));
             return yield this.generateJWT(customer);
+        });
+    }
+    signInWithGoogle(idToken) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { fullname, email, picture } = yield this.validateGoogleToken(idToken);
+            let customer = yield this.customerRespository.findOneItem({ email });
+            if (customer)
+                return yield this.generateJWT(customer);
+            customer = yield this.customerRespository.createOne({ fullname, email, image_profile: picture });
+            const salt = bcrypt_1.default.genSaltSync();
+            const pass = customer.password = bcrypt_1.default.hashSync(customer.password, salt);
+            customer = yield this.customerRespository.updateOne(customer._id, { password: pass }, { new: true });
+            if (customer)
+                yield this.generateJWT(customer);
         });
     }
 }

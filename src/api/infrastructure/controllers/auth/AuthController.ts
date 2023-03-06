@@ -31,4 +31,11 @@ export class AuthController extends ResponseData {
             next(new ErrorHandler('Hubo un error al iniciar sesión', 500));
         }
     }
+
+    public async loginWithGoogle(req: Request, res: Response, next:NextFunction) {
+        const { idToken } = req.body;
+        const response = await this.authUseCase.signInWithGoogle(idToken);
+
+    }
+
 }

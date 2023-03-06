@@ -1,4 +1,15 @@
 "use strict";
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -96,12 +107,13 @@ const CustomerSchema = new mongoose_1.Schema({
     //     required: false,
     // }
 }, {
-    timestamps: true
+    timestamps: true,
+    versionKey: false,
 });
-// CustomerSchema.method('toJSON', function () {
-//     const { __v, password, ...client } = this.toObject();
-//     return client;
-// });
+CustomerSchema.method('toJSON', function () {
+    const _a = this.toObject(), { __v, password } = _a, client = __rest(_a, ["__v", "password"]);
+    return client;
+});
 CustomerSchema.plugin(mongoose_paginate_v2_1.default);
 const CustomerModel = (0, mongoose_1.model)('Customer', CustomerSchema);
 exports.default = CustomerModel;
