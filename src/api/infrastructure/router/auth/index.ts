@@ -1,19 +1,33 @@
 import { Router } from 'express';
+import multer from 'multer';
+
+import validateAuthentication from '../../../../shared/infrastructure/validation/ValidateAuthentication';
 import { AuthUseCase } from '../../../application/auth/AuthUseCase';
 import { AuthController } from '../../controllers/auth/AuthController';
+import { AuthRepository } from '../../repository/auth/AuthRepository';
 import CustomerModel from '../../models/CustomerModel';
-import { CustomerRepository } from '../../repository/customer/CustomerRepository';
+
+import { S3Service } from '../../../../shared/infrastructure/aws/S3Service';
+import { multerConfig } from '../../../../shared/infrastructure/middleware/MulterConfig';
+import { TwilioService } from '../../../../shared/infrastructure/twilio/TwilioService';
 
 
 const authRouter = Router();
 
-const customerRespository = new CustomerRepository(CustomerModel);
-const authUseCase = new AuthUseCase(customerRespository);
-const customerController = new AuthController(authUseCase);
+const authRepository     = new AuthRepository(CustomerModel);
+const authUseCase        = new AuthUseCase(authRepository);
+const s3Service          = new S3Service();
+const twilioService      = new TwilioService();
+const authController     = new AuthController(authUseCase, s3Service, twilioService);
+
+const upload = multer(multerConfig);
 
 authRouter
-    .post('/login', customerController.login)
-    .post('/register', customerController.register)
+    .post('/login', authController.login)
+    .post('/register', authController.register)
+    .post('/change-password', validateAuthentication, authController.changePassword)
+    .post('/upload/profile-photo', [validateAuthentication ,upload.single('photo')], authController.uploadProfilePhoto)
+    .get('/customer', validateAuthentication, authController.revalidateToken)
 
 export default authRouter;
 

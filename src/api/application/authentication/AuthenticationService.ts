@@ -1,25 +1,27 @@
 import Jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import Bcrypt from 'bcrypt';
+import Generator from 'generate-password';
+
 import { OAuth2Client } from 'google-auth-library';
+
 import { CustomerEntity } from '../../domain/customer/CustomerEntity';
 
-
 export interface IGoogle {
-    fullname: string | undefined;
-    email: string | undefined;
-    picture: string | undefined;
+    fullname    : string | undefined;
+    email       : string | undefined;
+    picture     : string | undefined;
 }
 
 export interface ICustomerAuth {
     user    : CustomerEntity;
-    token  ?: string;
+    token?  : string;
 }
 
 export class Authentication {
 
     private client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-    protected async generateJWT(user: CustomerEntity): Promise<ICustomerAuth>{
+    protected async generateJWT(user: CustomerEntity): Promise<ICustomerAuth> {
         return new Promise((resolve, reject) => {
             const payload: string | object | Buffer = { user };
 
@@ -39,7 +41,7 @@ export class Authentication {
 
     protected async validateGoogleToken(token: string): Promise<IGoogle> {
         const ticket = await this.client.verifyIdToken({
-            idToken: token,
+            idToken : token,
             audience: process.env.GOOGLE_CLIENT_ID,
         });
 
@@ -49,12 +51,21 @@ export class Authentication {
     }
 
     protected encryptPassword(password: string): string {
-        const salt = bcrypt.genSaltSync();
-        return password = bcrypt.hashSync(password, salt);
+        const salt = Bcrypt.genSaltSync();
+        return Bcrypt.hashSync(password, salt);
     }
 
-    private generateRandomPassword() {
+    protected decryptPassword(password: string, encryptedPassword: string): boolean {
+        return Bcrypt.compareSync(password, encryptedPassword);
+    }
 
+    protected generateRandomPassword() {
+        return Generator.generate({
+            length  : 16,
+            numbers : true,
+            symbols : true,
+            strict  : true,
+        })
     }
 
 }

@@ -2,13 +2,13 @@ import { CustomerEntity } from './CustomerEntity';
 
 export class CustomerValue implements CustomerEntity {
 
-    readonly _id     :   String;
-    fullname         :   String;
-    privacity        :   Boolean;
-    email            :   String;
-    password        ?:   String;
-    stripe_customer ?:   String;
-    profile_image   ?:   String;
+    readonly _id     :   string;
+    fullname         :   string;
+    privacity        :   boolean;
+    email            :   string;
+    password        ?:   string;
+    stripe_customer ?:   string;
+    profile_image   ?:   string;
     createdAt        :   NativeDate;
     updatedAt        :   NativeDate;
 

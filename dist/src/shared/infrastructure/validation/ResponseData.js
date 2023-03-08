@@ -4,7 +4,7 @@ exports.ResponseData = void 0;
 const ErrorHandler_1 = require("../../domain/ErrorHandler");
 class ResponseData {
     successResponse(res, code = 200, data, message) {
-        res.status(code).json({ data, message });
+        res.status(code).json(Object.assign({ data }, (message && { message })));
     }
     badResponse(errorType, next) {
         next(errorType);

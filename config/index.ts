@@ -17,6 +17,13 @@ export type Configuration = {
     APP_LOG_LEVEL       :   string;
     SECRET_JWT_KEY      :   string;
     GOOGLE_CLIENT_ID    :   string;
+    GOOGLE_SECRET_ID    :   string;
+    AWS_REGION          :   string;
+    AWS_ACCESS_KEY      :   string;
+    AWS_SECRET_KEY      :   string;
+    AWS_BUCKET_NAME     :   string;
+    AWS_BUCKET          :   string;
+    S3_ENVIRONMENT      :   string;
 };
 
 
