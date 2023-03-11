@@ -24,9 +24,9 @@ class MongoRepository {
             return yield this.MODEL.findById(_id);
         });
     }
-    updateOne(_id, updated, options) {
+    updateOne(_id, updated) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.MODEL.findByIdAndUpdate(_id, updated, options);
+            return yield this.MODEL.findByIdAndUpdate(_id, updated, { new: true });
         });
     }
     createOne(body) {

@@ -25,6 +25,8 @@ class AuthController extends ResponseData_1.ResponseData {
         this.changePassword = this.changePassword.bind(this);
         this.uploadProfilePhoto = this.uploadProfilePhoto.bind(this);
         this.revalidateToken = this.revalidateToken.bind(this);
+        this.verifyCode = this.verifyCode.bind(this);
+        this.savePhoneNumberAndSendCode = this.savePhoneNumberAndSendCode.bind(this);
     }
     login(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -100,15 +102,31 @@ class AuthController extends ResponseData_1.ResponseData {
             }
         });
     }
-    sendVerificationCode(req, res, next) {
+    savePhoneNumberAndSendCode(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const { user } = req;
+            const { prefix, phone_number } = req.body;
             try {
                 const code = (0, Utils_1.generateRandomCode)();
-                yield this.twilioService.sendSMS(`xD ${code}`);
+                //await this.twilioService.sendSMS(`Verifica tu número de teléfono con el siguiente codigo - ${code}`);
+                const response = yield this.authUseCase.registerPhoneNumber(user, { prefix, phone_number }, +code);
+                this.invoke(response, 200, res, 'El telefono se registro correctamente', next);
             }
             catch (error) {
-                console.log(error);
+                next(new ErrorHandler_1.ErrorHandler('Hubo un error al guardar el telefono', 500));
+            }
+        });
+    }
+    verifyCode(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { user } = req;
+            const { code } = req.body;
+            try {
+                const response = yield this.authUseCase.verifyPhoneNumber(user._id, +code);
+                this.invoke(response, 200, res, 'El código de verificación se envió correctamente', next);
+            }
+            catch (error) {
+                next(new ErrorHandler_1.ErrorHandler('El codigo no se ha enviado', 500));
             }
         });
     }

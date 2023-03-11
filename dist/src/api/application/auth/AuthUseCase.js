@@ -10,8 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthUseCase = void 0;
-const ErrorHandler_1 = require("../../../shared/domain/ErrorHandler");
 const AuthenticationService_1 = require("../authentication/AuthenticationService");
+const ErrorHandler_1 = require("../../../shared/domain/ErrorHandler");
+const MomentService_1 = require("../../../shared/infrastructure/moment/MomentService");
 class AuthUseCase extends AuthenticationService_1.Authentication {
     constructor(authRepository) {
         super();
@@ -57,17 +58,42 @@ class AuthUseCase extends AuthenticationService_1.Authentication {
             if (!currentPassword)
                 return new ErrorHandler_1.ErrorHandler('Error la contraseña actual no es valida', 400);
             const newPass = this.encryptPassword(newPassword);
-            return yield this.authRepository.updateOne(customer._id, { password: newPass }, { new: true });
+            return yield this.authRepository.updateOne(customer._id, { password: newPass });
         });
     }
     updateProfilePhoto(photo, customer_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.authRepository.updateOne(customer_id, { profile_image: photo }, { new: true });
+            return yield this.authRepository.updateOne(customer_id, { profile_image: photo });
         });
     }
     generateToken(customer) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.generateJWT(customer);
+        });
+    }
+    registerPhoneNumber(customer, phone_data, code) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { phone_number, prefix } = phone_data;
+            const phoneData = yield this.authRepository.validatePhoneNumber(phone_number);
+            if (phoneData)
+                return new ErrorHandler_1.ErrorHandler('El telefono ya esta en uso', 400);
+            const data = { phone: { code, prefix, phone_number, expiration_date: new MomentService_1.MomentService().addMinutesToDate(5) } };
+            return yield this.authRepository.updateOne(customer._id, data);
+        });
+    }
+    verifyPhoneNumber(_id, currentCode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const customer = yield this.authRepository.findById(_id);
+            if (!customer.phone.phone_number)
+                return new ErrorHandler_1.ErrorHandler('Ingresa un numero telefonico antes de continuar', 400);
+            if (customer.phone.verified)
+                return new ErrorHandler_1.ErrorHandler('El telefono ya ha sido verificado', 400);
+            const { expiration_date, code } = customer.phone;
+            if (code !== currentCode)
+                return new ErrorHandler_1.ErrorHandler('El código no es correcto', 400);
+            if (!new MomentService_1.MomentService().verifyExpirationDate(expiration_date))
+                return new ErrorHandler_1.ErrorHandler('El código ha expirado', 400);
+            return yield this.authRepository.verifyCode(customer._id);
         });
     }
 }

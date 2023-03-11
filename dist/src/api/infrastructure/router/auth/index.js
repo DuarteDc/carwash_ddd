@@ -25,5 +25,7 @@ authRouter
     .post('/register', authController.register)
     .post('/change-password', ValidateAuthentication_1.default, authController.changePassword)
     .post('/upload/profile-photo', [ValidateAuthentication_1.default, upload.single('photo')], authController.uploadProfilePhoto)
-    .get('/customer', ValidateAuthentication_1.default, authController.revalidateToken);
+    .get('/customer', ValidateAuthentication_1.default, authController.revalidateToken)
+    .post('/verify-code', ValidateAuthentication_1.default, authController.verifyCode)
+    .post('/phone-number', ValidateAuthentication_1.default, authController.savePhoneNumberAndSendCode);
 exports.default = authRouter;

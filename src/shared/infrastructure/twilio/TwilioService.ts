@@ -1,5 +1,6 @@
 import { Twilio } from 'twilio';
 
+import { ErrorHandler } from '../../domain/ErrorHandler';
 export class TwilioService {
 
     private twilio: Twilio;
@@ -21,7 +22,7 @@ export class TwilioService {
             }).then((message) => {
                 resolve(message)
             }).catch((error) => {
-                throw Error('Hubo un error al enviar el mensaje');
+                reject(new ErrorHandler('Hubo un error al enviar el mensaje - intenta mas tarde', 400));
             })
         })
     }

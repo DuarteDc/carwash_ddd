@@ -26,8 +26,10 @@ authRouter
     .post('/login', authController.login)
     .post('/register', authController.register)
     .post('/change-password', validateAuthentication, authController.changePassword)
-    .post('/upload/profile-photo', [validateAuthentication ,upload.single('photo')], authController.uploadProfilePhoto)
+    .post('/upload/profile-photo', [validateAuthentication, upload.single('photo')], authController.uploadProfilePhoto)
     .get('/customer', validateAuthentication, authController.revalidateToken)
+    .post('/verify-code', validateAuthentication, authController.verifyCode)
+    .post('/phone-number', validateAuthentication, authController.savePhoneNumberAndSendCode)
 
 export default authRouter;
 

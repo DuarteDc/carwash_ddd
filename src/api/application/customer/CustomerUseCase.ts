@@ -27,7 +27,7 @@ export class CustomerUseCase {
     }
 
     public async updateOneCustomer(_id: string, updated: object): Promise<CustomerEntity | ErrorHandler | null> {
-        return await this.customerRepository.updateOne(_id, updated, { new: true });
+        return await this.customerRepository.updateOne(_id, updated);
     }
 
 }

@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TwilioService = void 0;
 const twilio_1 = require("twilio");
+const ErrorHandler_1 = require("../../domain/ErrorHandler");
 class TwilioService {
     constructor() {
         this.accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -29,7 +30,7 @@ class TwilioService {
                 }).then((message) => {
                     resolve(message);
                 }).catch((error) => {
-                    throw Error('Hubo un error al enviar el mensaje');
+                    reject(new ErrorHandler_1.ErrorHandler('Hubo un error al enviar el mensaje - intenta mas tarde', 400));
                 });
             });
         });

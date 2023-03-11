@@ -41,7 +41,7 @@ class CustomerUseCase {
     }
     updateOneCustomer(_id, updated) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.customerRepository.updateOne(_id, updated, { new: true });
+            return yield this.customerRepository.updateOne(_id, updated);
         });
     }
 }

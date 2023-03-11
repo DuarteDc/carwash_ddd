@@ -24,7 +24,7 @@ export class CustomerRepository extends MongoRepository implements CustomerConfi
         return await this.findById(_id);
     }
     async findAndUpdateCustomer(_id: String, updated: object): Promise<CustomerEntity | null> {
-        return await this.updateOne(_id, updated, { new: true });
+        return await this.updateOne(_id, updated);
     }
     async findAllCustomers(): Promise<CustomerEntity[] | null> {
         return await this.findAll();
