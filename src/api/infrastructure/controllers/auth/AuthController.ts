@@ -1,16 +1,21 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { CustomerEntity, IPhone } from '../../../domain/customer/CustomerEntity';
+import { CustomerEntity } from '../../../domain/customer/CustomerEntity';
 import { ErrorHandler } from '../../../../shared/domain/ErrorHandler';
 
 import { AuthUseCase } from '../../../application/auth/AuthUseCase';
-import { ICustomerAuth } from '../../../application/authentication/AuthenticationService'
-    ;
-import { ResponseData } from '../../../../shared/infrastructure/validation/ResponseData';
+import { ICustomerAuth } from '../../../application/authentication/AuthenticationService';
+
 import { S3Service } from '../../../../shared/infrastructure/aws/S3Service';
 import { TwilioService } from '../../../../shared/infrastructure/twilio/TwilioService';
+
+import { ResponseData } from '../../../../shared/infrastructure/validation/ResponseData';
+import { AuthValidations } from '../../../../shared/infrastructure/validation/Auth/AuthValidatons';
 import { generateRandomCode } from '../../../../shared/infrastructure/validation/Utils';
+
+
 import { IPhoneRequest } from '../../../application/auth/interfaces';
+
 export class AuthController extends ResponseData {
 
     constructor(private readonly authUseCase: AuthUseCase, private readonly s3Service: S3Service, private readonly twilioService: TwilioService) {
@@ -27,7 +32,6 @@ export class AuthController extends ResponseData {
 
     public async login(req: Request, res: Response, next: NextFunction): Promise<ICustomerAuth | ErrorHandler | void> {
         const { email, password } = req.body;
-
         try {
             const response = await this.authUseCase.signIn(email, password);
             this.invoke(response, 200, res, '', next);
@@ -38,10 +42,12 @@ export class AuthController extends ResponseData {
 
     public async register(req: Request, res: Response, next: NextFunction): Promise<ICustomerAuth | ErrorHandler | void> {
         const { email, password, fullname } = req.body;
+        console.log(req.body)
         try {
             const response = await this.authUseCase.signUp({ fullname, email, password });
             this.invoke(response, 200, res, '', next);
         } catch (error) {
+            console.log(error)
             next(new ErrorHandler('Hubo un error al iniciar sesión', 500));
         }
     }
@@ -52,6 +58,7 @@ export class AuthController extends ResponseData {
             const response = await this.authUseCase.signInWithGoogle(idToken);
             this.invoke(response, 200, res, '', next);
         } catch (error) {
+            console.log(error)
             next(new ErrorHandler('Hubo un error al iniciar sesión', 500));
         }
     }

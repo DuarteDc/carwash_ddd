@@ -3,7 +3,7 @@ import { Authentication } from '../authentication/AuthenticationService';
 import { AuthRepository } from '../../domain/auth/AuthRepository';
 import { ErrorHandler } from '../../../shared/domain/ErrorHandler';
 
-import { CustomerEntity, IPhone } from '../../domain/customer/CustomerEntity';
+import { CustomerEntity } from '../../domain/customer/CustomerEntity';
 import { ICustomerAuth } from '../authentication/AuthenticationService';
 
 import { MomentService } from '../../../shared/infrastructure/moment/MomentService';
@@ -68,8 +68,8 @@ export class AuthUseCase extends Authentication {
     async registerPhoneNumber(customer: CustomerEntity, phone_data: IPhoneRequest, code: number) {
         const { phone_number, prefix} = phone_data;
         
-        const phoneData = await this.authRepository.validatePhoneNumber(phone_number);
-        if(phoneData) return new ErrorHandler('El telefono ya esta en uso', 400);
+        const phoneData = await this.authRepository.validatePhoneNumber(phone_number, customer._id);
+        if(phoneData) return new ErrorHandler('El telefono ya ha sido registrado', 400);
 
         const data = { phone: { code, prefix, phone_number, expiration_date: new MomentService().addMinutesToDate(5) } }
         return await this.authRepository.updateOne(customer._id, data);

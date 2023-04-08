@@ -74,9 +74,9 @@ class AuthUseCase extends AuthenticationService_1.Authentication {
     registerPhoneNumber(customer, phone_data, code) {
         return __awaiter(this, void 0, void 0, function* () {
             const { phone_number, prefix } = phone_data;
-            const phoneData = yield this.authRepository.validatePhoneNumber(phone_number);
+            const phoneData = yield this.authRepository.validatePhoneNumber(phone_number, customer._id);
             if (phoneData)
-                return new ErrorHandler_1.ErrorHandler('El telefono ya esta en uso', 400);
+                return new ErrorHandler_1.ErrorHandler('El telefono ya ha sido registrado', 400);
             const data = { phone: { code, prefix, phone_number, expiration_date: new MomentService_1.MomentService().addMinutesToDate(5) } };
             return yield this.authRepository.updateOne(customer._id, data);
         });

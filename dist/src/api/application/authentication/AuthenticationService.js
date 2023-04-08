@@ -19,7 +19,8 @@ const generate_password_1 = __importDefault(require("generate-password"));
 const google_auth_library_1 = require("google-auth-library");
 class Authentication {
     constructor() {
-        this.client = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+        this.googleKey = process.env.GOOGLE_CLIENT_ID;
+        this.client = new google_auth_library_1.OAuth2Client(this.googleKey);
     }
     generateJWT(user) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -28,10 +29,8 @@ class Authentication {
                 jsonwebtoken_1.default.sign(payload, process.env.SECRET_JWT_KEY || '', {
                     expiresIn: '7d',
                 }, (error, token) => {
-                    if (error) {
-                        console.log(error);
+                    if (error)
                         return reject('Error to generate JWT');
-                    }
                     resolve({ token, user });
                 });
             });
@@ -39,12 +38,16 @@ class Authentication {
     }
     validateGoogleToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            const ticket = yield this.client.verifyIdToken({
-                idToken: token,
-                audience: process.env.GOOGLE_CLIENT_ID,
-            });
-            const payload = ticket.getPayload();
-            return { fullname: payload === null || payload === void 0 ? void 0 : payload.name, email: payload === null || payload === void 0 ? void 0 : payload.email, picture: payload === null || payload === void 0 ? void 0 : payload.picture };
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                const ticket = yield this.client.verifyIdToken({
+                    idToken: token,
+                    audience: this.googleKey,
+                });
+                if (!ticket)
+                    reject('El token de google no es valido');
+                const payload = ticket.getPayload();
+                resolve({ fullname: payload === null || payload === void 0 ? void 0 : payload.name, email: payload === null || payload === void 0 ? void 0 : payload.email, picture: payload === null || payload === void 0 ? void 0 : payload.picture });
+            }));
         });
     }
     encryptPassword(password) {

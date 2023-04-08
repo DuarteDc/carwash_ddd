@@ -43,11 +43,13 @@ class AuthController extends ResponseData_1.ResponseData {
     register(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const { email, password, fullname } = req.body;
+            console.log(req.body);
             try {
                 const response = yield this.authUseCase.signUp({ fullname, email, password });
                 this.invoke(response, 200, res, '', next);
             }
             catch (error) {
+                console.log(error);
                 next(new ErrorHandler_1.ErrorHandler('Hubo un error al iniciar sesión', 500));
             }
         });
@@ -60,6 +62,7 @@ class AuthController extends ResponseData_1.ResponseData {
                 this.invoke(response, 200, res, '', next);
             }
             catch (error) {
+                console.log(error);
                 next(new ErrorHandler_1.ErrorHandler('Hubo un error al iniciar sesión', 500));
             }
         });

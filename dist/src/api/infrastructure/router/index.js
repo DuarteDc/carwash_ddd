@@ -8,11 +8,13 @@ const express_1 = require("express");
 const customer_1 = __importDefault(require("./customer/"));
 const auth_1 = __importDefault(require("./auth/"));
 const services_1 = __importDefault(require("./services"));
+const typeCar_1 = __importDefault(require("./typeCar"));
 const apiRouter = () => {
     const apiRouter = (0, express_1.Router)();
     apiRouter.use('/auth', auth_1.default);
     apiRouter.use('/customer', customer_1.default);
     apiRouter.use('/services', services_1.default);
+    apiRouter.use('/type-car', typeCar_1.default);
     return apiRouter;
 };
 exports.apiRouter = apiRouter;

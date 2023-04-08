@@ -19,7 +19,8 @@ export interface ICustomerAuth {
 
 export class Authentication {
 
-    private client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    private googleKey   = process.env.GOOGLE_CLIENT_ID;
+    private client      = new OAuth2Client(this.googleKey);
 
     protected async generateJWT(user: CustomerEntity): Promise<ICustomerAuth> {
         return new Promise((resolve, reject) => {
@@ -28,26 +29,25 @@ export class Authentication {
             Jwt.sign(payload, process.env.SECRET_JWT_KEY || '', {
                 expiresIn: '7d',
             }, (error, token) => {
-                if (error) {
-                    console.log(error);
-                    return reject('Error to generate JWT');
-                }
+                if (error)  return reject('Error to generate JWT');
                 resolve({ token, user });
             })
 
         });
-
     }
 
-    protected async validateGoogleToken(token: string): Promise<IGoogle> {
-        const ticket = await this.client.verifyIdToken({
-            idToken : token,
-            audience: process.env.GOOGLE_CLIENT_ID,
-        });
-
-        const payload = ticket.getPayload();
-
-        return { fullname: payload?.name, email: payload?.email, picture: payload?.picture };
+    protected async validateGoogleToken(token: string): Promise<IGoogle> {        
+        return new Promise(async (resolve, reject) => {
+            const ticket = await this.client.verifyIdToken({
+                idToken : token,
+                audience: this.googleKey,
+            });
+            if(!ticket) reject('El token de google no es valido');
+    
+            const payload = ticket.getPayload();
+            resolve({ fullname: payload?.name, email: payload?.email, picture: payload?.picture });
+        })
+        
     }
 
     protected encryptPassword(password: string): string {

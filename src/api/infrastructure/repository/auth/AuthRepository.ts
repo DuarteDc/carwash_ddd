@@ -11,9 +11,8 @@ export class AuthRepository extends MongoRepository implements AuthConfig {
         return await this.CustomerModel.findByIdAndUpdate(_id, { 'phone.verified': true }, { new: true });
     }
 
-    async validatePhoneNumber(phone: number): Promise<CustomerEntity | null> {
-         return await this.CustomerModel.findOne({ 'phone.phone_number': phone });
+    async validatePhoneNumber(phone: number, customer_id: string): Promise<CustomerEntity | null> {
+         return await this.CustomerModel.findOne({ 'phone.phone_number': phone, _id: { $ne: customer_id} });
     }
-
 
 }

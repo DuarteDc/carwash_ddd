@@ -21,9 +21,9 @@ class AuthRepository extends MongoRepository_1.MongoRepository {
             return yield this.CustomerModel.findByIdAndUpdate(_id, { 'phone.verified': true }, { new: true });
         });
     }
-    validatePhoneNumber(phone) {
+    validatePhoneNumber(phone, customer_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.CustomerModel.findOne({ 'phone.phone_number': phone });
+            return yield this.CustomerModel.findOne({ 'phone.phone_number': phone, _id: { $ne: customer_id } });
         });
     }
 }

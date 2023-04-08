@@ -7,9 +7,8 @@ const RequestValidator = (req, res, next) => {
         return { parameter: param, message: msg };
     };
     const errors = (0, express_validator_1.validationResult)(req).formatWith(errorFormatter).array({ onlyFirstError: true });
-    if (errors.length > 0) {
-        res.status(400).json({ errors: errors });
-    }
+    if (errors.length > 0)
+        return res.status(400).json({ errors });
     next();
 };
 exports.RequestValidator = RequestValidator;

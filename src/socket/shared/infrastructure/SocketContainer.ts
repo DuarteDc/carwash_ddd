@@ -15,7 +15,6 @@ export class SocketContainer {
         });
 
         this.register();
-
     }
 
     public register(): void {
@@ -25,7 +24,7 @@ export class SocketContainer {
                 socketServer : asClass(SocketServer).singleton(),
                 router       : asFunction(Router).singleton(),
             })
-            .register({
+            .register({ 
                 errorMiddleware : asClass(ErrorMiddleware).singleton(),
                 socketRouter    : asFunction(socketRouter)
             })
