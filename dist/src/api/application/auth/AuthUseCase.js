@@ -47,7 +47,7 @@ class AuthUseCase extends AuthenticationService_1.Authentication {
                 return yield this.generateJWT(customer);
             let password = this.generateRandomPassword();
             password = this.encryptPassword(password);
-            customer = yield this.authRepository.createOne({ fullname, email, image_profile: picture, password });
+            customer = yield this.authRepository.createOne({ fullname, email, profile_image: picture, password, google: true });
             return yield this.generateJWT(customer);
         });
     }

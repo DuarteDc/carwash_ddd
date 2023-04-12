@@ -44,6 +44,19 @@ class S3Service {
             }
         });
     }
+    uploadToS3AndGetUrl(key, file) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.uploadToS3(key, file).then(({ message, success }) => __awaiter(this, void 0, void 0, function* () {
+                const params = {
+                    Bucket: process.env.AWS_BUCKET_NAME || '',
+                    Key: key,
+                    Expires: 300,
+                };
+                const url = yield this.s3.getSignedUrl('getObject', params);
+                return { url, message, success, key };
+            }));
+        });
+    }
     getUrlObject(key) {
         return __awaiter(this, void 0, void 0, function* () {
             const params = {

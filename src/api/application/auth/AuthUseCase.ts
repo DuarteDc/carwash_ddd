@@ -14,7 +14,7 @@ export class AuthUseCase extends Authentication {
         super();
     }
 
-    async signIn(email: string, password: string): Promise<ErrorHandler | ICustomerAuth | null> {
+    async signIn(email: string, password: string): Promise<ErrorHandler | ICustomerAuth> {
         let customer = await this.authRepository.findOneItem({ email });
 
         if (!customer) return new ErrorHandler('El usuario o contraseña no son validos', 400);
@@ -35,7 +35,7 @@ export class AuthUseCase extends Authentication {
         return await this.generateJWT(customer);
     }
 
-    async signInWithGoogle(idToken: string): Promise<ErrorHandler | ICustomerAuth | null> {
+    async signInWithGoogle(idToken: string): Promise<ICustomerAuth> {
         let { fullname, email, picture } = await this.validateGoogleToken(idToken);
         let customer = await this.authRepository.findOneItem({ email });
 
@@ -44,7 +44,7 @@ export class AuthUseCase extends Authentication {
         let password = this.generateRandomPassword();
         password = this.encryptPassword(password);
 
-        customer = await this.authRepository.createOne({ fullname, email, image_profile: picture, password });
+        customer = await this.authRepository.createOne({ fullname, email, profile_image: picture, password, google: true });
 
         return await this.generateJWT(customer);
     }
@@ -57,7 +57,7 @@ export class AuthUseCase extends Authentication {
         return await this.authRepository.updateOne(customer._id, { password: newPass });
     }
 
-    async updateProfilePhoto(photo: string, customer_id: string): Promise<ErrorHandler | ICustomerAuth | null> {
+    async updateProfilePhoto(photo: string, customer_id: string): Promise<CustomerEntity> {
         return await this.authRepository.updateOne(customer_id, { profile_image: photo });
     }
 

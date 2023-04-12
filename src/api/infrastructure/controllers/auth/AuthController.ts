@@ -10,7 +10,6 @@ import { S3Service } from '../../../../shared/infrastructure/aws/S3Service';
 import { TwilioService } from '../../../../shared/infrastructure/twilio/TwilioService';
 
 import { ResponseData } from '../../../../shared/infrastructure/validation/ResponseData';
-import { AuthValidations } from '../../../../shared/infrastructure/validation/Auth/AuthValidatons';
 import { generateRandomCode } from '../../../../shared/infrastructure/validation/Utils';
 
 
@@ -34,6 +33,7 @@ export class AuthController extends ResponseData {
         const { email, password } = req.body;
         try {
             const response = await this.authUseCase.signIn(email, password);
+            if(!(response instanceof ErrorHandler) && response.user.profile_image === response.user._id.toString()) response.user.profile_image = await this.s3Service.getUrlObject(response.user.profile_image);
             this.invoke(response, 200, res, '', next);
         } catch (error) {
             next(new ErrorHandler('Hubo un error al iniciar sesión', 500));
@@ -42,7 +42,6 @@ export class AuthController extends ResponseData {
 
     public async register(req: Request, res: Response, next: NextFunction): Promise<ICustomerAuth | ErrorHandler | void> {
         const { email, password, fullname } = req.body;
-        console.log(req.body)
         try {
             const response = await this.authUseCase.signUp({ fullname, email, password });
             this.invoke(response, 200, res, '', next);
@@ -56,6 +55,7 @@ export class AuthController extends ResponseData {
         const { idToken } = req.body;
         try {
             const response = await this.authUseCase.signInWithGoogle(idToken);
+            if(response.user.profile_image === response.user._id.toString()) response.user.profile_image = await this.s3Service.getUrlObject(response.user.profile_image);
             this.invoke(response, 200, res, '', next);
         } catch (error) {
             console.log(error)
@@ -77,11 +77,13 @@ export class AuthController extends ResponseData {
     public async uploadProfilePhoto(req: Request, res: Response, next: NextFunction) {
         const { user } = req;
         try {
-            const { message, key } = await this.s3Service.uploadToS3(user._id, req.file);
+            const { message, key, url, success } = await this.s3Service.uploadToS3AndGetUrl(user._id, req.file);
+            if(!success) return new ErrorHandler('Hubo un error al subir la imagen', 400)
             const response = await this.authUseCase.updateProfilePhoto(key, user._id);
+            response.profile_image = url;
             this.invoke(response, 200, res, message, next);
         } catch (error) {
-            next(new ErrorHandler('Hubo un error al subir la foto', 400));
+            next(new ErrorHandler('Hubo un error al subir la foto', 500));
         }
     }
 

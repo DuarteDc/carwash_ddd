@@ -33,6 +33,8 @@ class AuthController extends ResponseData_1.ResponseData {
             const { email, password } = req.body;
             try {
                 const response = yield this.authUseCase.signIn(email, password);
+                if (!(response instanceof ErrorHandler_1.ErrorHandler) && response.user.profile_image === response.user._id.toString())
+                    response.user.profile_image = yield this.s3Service.getUrlObject(response.user.profile_image);
                 this.invoke(response, 200, res, '', next);
             }
             catch (error) {
@@ -43,7 +45,6 @@ class AuthController extends ResponseData_1.ResponseData {
     register(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const { email, password, fullname } = req.body;
-            console.log(req.body);
             try {
                 const response = yield this.authUseCase.signUp({ fullname, email, password });
                 this.invoke(response, 200, res, '', next);
@@ -59,6 +60,8 @@ class AuthController extends ResponseData_1.ResponseData {
             const { idToken } = req.body;
             try {
                 const response = yield this.authUseCase.signInWithGoogle(idToken);
+                if (response.user.profile_image === response.user._id.toString())
+                    response.user.profile_image = yield this.s3Service.getUrlObject(response.user.profile_image);
                 this.invoke(response, 200, res, '', next);
             }
             catch (error) {
@@ -84,12 +87,15 @@ class AuthController extends ResponseData_1.ResponseData {
         return __awaiter(this, void 0, void 0, function* () {
             const { user } = req;
             try {
-                const { message, key } = yield this.s3Service.uploadToS3(user._id, req.file);
+                const { message, key, url, success } = yield this.s3Service.uploadToS3AndGetUrl(user._id, req.file);
+                if (!success)
+                    return new ErrorHandler_1.ErrorHandler('Hubo un error al subir la imagen', 400);
                 const response = yield this.authUseCase.updateProfilePhoto(key, user._id);
+                response.profile_image = url;
                 this.invoke(response, 200, res, message, next);
             }
             catch (error) {
-                next(new ErrorHandler_1.ErrorHandler('Hubo un error al subir la foto', 400));
+                next(new ErrorHandler_1.ErrorHandler('Hubo un error al subir la foto', 500));
             }
         });
     }
