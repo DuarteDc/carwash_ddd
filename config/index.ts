@@ -13,6 +13,7 @@ export type Configuration = {
     NODE_ENV            :   string;
     PORT                :   number;
     APP_NAME            :   string;
+    TIME_ZONE           :   string;
     APP_DATABASE_URL    :   string;
     APP_LOG_LEVEL       :   string;
     SECRET_JWT_KEY      :   string;
@@ -22,8 +23,11 @@ export type Configuration = {
     AWS_ACCESS_KEY      :   string;
     AWS_SECRET_KEY      :   string;
     AWS_BUCKET_NAME     :   string;
-    AWS_BUCKET          :   string;
     S3_ENVIRONMENT      :   string;
+    TWILIO_ACCOUNT_SID  :   string;
+    TWILIO_AUTH_TOKEN   :   string;
+    TWILIO_PHONE_NUMBER :   string;
+    MY_NUMBER           :   string;
 };
 
 

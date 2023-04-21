@@ -3,19 +3,29 @@ import { Configuration } from '../';
 
 const TEST : Configuration = {
     NODE_ENV            :    'test',
-    PORT                :    3000,
-    APP_NAME            :    'CARWASH',
-    APP_DATABASE_URL    :    'mongodb+srv://admin:Q7bErx2ttZz4nxuUubu2YZPnb@clustermotopack.invpg.mongodb.net/Carwash',
+    PORT                :    +process.env.PORT!,
+    APP_NAME            :    process.env.APP_NAME!,
+    TIME_ZONE           :    process.env.TIME_ZONE!,
+
+    APP_DATABASE_URL    :    process.env.APP_DATABASE_URL!,
+
     APP_LOG_LEVEL       :    'test',
-    SECRET_JWT_KEY      :     '4msT&@u0vrYZCM1GVUs9ZAV$bI3Mp*31xOFKYg1daALNoMRenz',
-    GOOGLE_CLIENT_ID    :    process.env.GOOGLE_CLIENT_ID || '',
-    GOOGLE_SECRET_ID    :    process.env.GOOGLE_SECRET_ID || '',
-    AWS_REGION          :    process.env.AWS_REGION || '',
-    AWS_ACCESS_KEY      :    process.env.AWS_ACCESS_KEY || '',
-    AWS_SECRET_KEY      :    process.env.AWS_SECRET_KEY ||  '',
-    AWS_BUCKET_NAME     :    process.env.AWS_BUCKET_UPLOAD || '',
-    AWS_BUCKET          :    process.env.AWS_BUCKET ||  '',
-    S3_ENVIRONMENT      :    process.env.S3_ENVIRONMENT ||  '',
+
+    SECRET_JWT_KEY      :    process.env.SECRET_JWT_KEY!,
+
+    GOOGLE_CLIENT_ID    :    process.env.GOOGLE_CLIENT_ID!,
+    GOOGLE_SECRET_ID    :    process.env.GOOGLE_SECRET_ID!,
+
+    AWS_REGION          :    process.env.AWS_REGION!,
+    AWS_ACCESS_KEY      :    process.env.AWS_ACCESS_KEY!,
+    AWS_SECRET_KEY      :    process.env.AWS_SECRET_KEY!,
+    AWS_BUCKET_NAME     :    process.env.AWS_BUCKET_NAME!,
+    S3_ENVIRONMENT      :    process.env.S3_ENVIRONMENT!,
+
+    TWILIO_ACCOUNT_SID  :   process.env.TWILIO_ACCOUNT_SID!,
+    TWILIO_AUTH_TOKEN   :   process.env.TWILIO_AUTH_TOKEN!,
+    TWILIO_PHONE_NUMBER :   process.env.TWILIO_PHONE_NUMBER!,
+    MY_NUMBER           :   process.env.MY_NUMBER!,
 }
 
 

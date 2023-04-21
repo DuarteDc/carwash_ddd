@@ -66,6 +66,11 @@ class AuthUseCase extends AuthenticationService_1.Authentication {
             return yield this.authRepository.updateOne(customer_id, { profile_image: photo });
         });
     }
+    updateCustomer(customer_id, email, fullname) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.authRepository.updateOne(customer_id, { email, fullname });
+        });
+    }
     generateToken(customer) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.generateJWT(customer);
@@ -94,6 +99,16 @@ class AuthUseCase extends AuthenticationService_1.Authentication {
             if (!new MomentService_1.MomentService().verifyExpirationDate(expiration_date))
                 return new ErrorHandler_1.ErrorHandler('El código ha expirado', 400);
             return yield this.authRepository.verifyCode(customer._id);
+        });
+    }
+    uploadCustomerFiles(customer_id, keys) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const customer = yield this.authRepository.findById(customer_id);
+            keys.forEach(({ key, field }) => {
+                customer[field] = key;
+            });
+            yield customer.save();
+            return customer;
         });
     }
 }

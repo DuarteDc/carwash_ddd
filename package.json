@@ -13,7 +13,6 @@
   "dependencies": {
     "@types/compression": "^1.7.2",
     "@types/mongoose": "^5.11.97",
-    "@types/multer": "^1.4.7",
     "@types/uuid": "^9.0.1",
     "awilix": "^8.0.0",
     "aws-sdk": "^2.1329.0",
@@ -40,6 +39,7 @@
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.17",
     "@types/jsonwebtoken": "^9.0.1",
+    "@types/multer": "^1.4.7",
     "nodemon": "^2.0.20",
     "tslint": "^6.1.3"
   }

@@ -15,12 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.S3Service = void 0;
 const fs_1 = __importDefault(require("fs"));
 const s3_1 = __importDefault(require("aws-sdk/clients/s3"));
+const config_1 = require("../../../../config");
 class S3Service {
     constructor() {
-        this.region = process.env.AWS_REGION;
-        this.accessKeyId = process.env.AWS_ACCESS_KEY;
-        this.secretAccessKey = process.env.AWS_SECRET_KEY;
-        this.bucket = process.env.AWS_BUCKET_NAME || '';
+        this.region = config_1.config.AWS_REGION;
+        this.accessKeyId = config_1.config.AWS_ACCESS_KEY;
+        this.secretAccessKey = config_1.config.AWS_SECRET_KEY;
+        this.bucket = config_1.config.AWS_BUCKET_NAME;
+        this.environment = config_1.config.S3_ENVIRONMENT;
         this.s3 = new s3_1.default({
             region: this.region,
             accessKeyId: this.accessKeyId,
@@ -33,7 +35,7 @@ class S3Service {
                 const fileContent = fs_1.default.readFileSync(file.path);
                 const params = {
                     Bucket: this.bucket,
-                    Key: key,
+                    Key: this.environment + key,
                     Body: fileContent,
                 };
                 yield this.s3.upload(params).promise();
@@ -49,7 +51,7 @@ class S3Service {
             return yield this.uploadToS3(key, file).then(({ message, success }) => __awaiter(this, void 0, void 0, function* () {
                 const params = {
                     Bucket: process.env.AWS_BUCKET_NAME || '',
-                    Key: key,
+                    Key: this.environment + key,
                     Expires: 300,
                 };
                 const url = yield this.s3.getSignedUrl('getObject', params);

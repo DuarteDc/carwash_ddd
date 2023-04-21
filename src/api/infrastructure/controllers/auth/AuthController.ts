@@ -16,6 +16,7 @@ import { generateRandomCode } from '../../../../shared/infrastructure/validation
 import { IPhoneRequest } from '../../../application/auth/interfaces';
 
 export class AuthController extends ResponseData {
+    protected path = '/customers'
 
     constructor(private readonly authUseCase: AuthUseCase, private readonly s3Service: S3Service, private readonly twilioService: TwilioService) {
         super();
@@ -27,6 +28,8 @@ export class AuthController extends ResponseData {
         this.revalidateToken            =   this.revalidateToken.bind(this);
         this.verifyCode                 =   this.verifyCode.bind(this);
         this.savePhoneNumberAndSendCode =   this.savePhoneNumberAndSendCode.bind(this);
+        this.updateCustomer             =   this.updateCustomer.bind(this);
+        this.uploadFiles                =   this.uploadFiles.bind(this);
     }
 
     public async login(req: Request, res: Response, next: NextFunction): Promise<ICustomerAuth | ErrorHandler | void> {
@@ -77,19 +80,34 @@ export class AuthController extends ResponseData {
     public async uploadProfilePhoto(req: Request, res: Response, next: NextFunction) {
         const { user } = req;
         try {
-            const { message, key, url, success } = await this.s3Service.uploadToS3AndGetUrl(user._id, req.file);
+            const pathObject = `${this.path}/${user._id}/${req.file?.fieldname}`;
+            const { message, key, url, success } = await this.s3Service.uploadToS3AndGetUrl(pathObject, req.file);
             if(!success) return new ErrorHandler('Hubo un error al subir la imagen', 400)
             const response = await this.authUseCase.updateProfilePhoto(key, user._id);
             response.profile_image = url;
             this.invoke(response, 200, res, message, next);
         } catch (error) {
+            console.log(error)
             next(new ErrorHandler('Hubo un error al subir la foto', 500));
+        }
+    }
+
+    public async updateCustomer(req: Request, res: Response, next: NextFunction) {
+        const { user } = req;
+        const { email, fullname } = req.body;
+        try {
+            const response = await this.authUseCase.updateCustomer(user._id, email, fullname);
+            if(response.profile_image === response._id.toString()) response.profile_image = await this.s3Service.getUrlObject(response.profile_image);
+            this.invoke(response, 200, res, 'El usuario se actualizo con exito', next);
+        } catch (error) {
+            next(new ErrorHandler('Hubo un error al actualizar la información', 500));
         }
     }
 
     public async revalidateToken(req: Request, res: Response, next: NextFunction) {
         const { user } = req;
         try {
+            if(user.profile_image === user._id.toString()) user.profile_image = await this.s3Service.getUrlObject(user.profile_image);
             const response = await this.authUseCase.generateToken(user);
             this.invoke(response, 200, res, '', next);
         } catch (error) {
@@ -116,6 +134,22 @@ export class AuthController extends ResponseData {
         try {
             const response = await this.authUseCase.verifyPhoneNumber(user._id, +code);
             this.invoke(response, 200, res, 'El código de verificación se envió correctamente', next);
+        } catch (error) {
+            next(new ErrorHandler('El codigo no se ha enviado', 500));
+        }
+    }
+
+    public async uploadFiles({ files, user}: Request, res: Response, next: NextFunction) {
+        const documents = [ files?.ine, files?.curp, files?.prook_address, files?.criminal_record ];
+        let keys = [];
+        try {
+            await Promise.all(documents?.map(async (file) => {
+                const pathObject = `${this.path}/${user._id}/${file[0].fieldname}`;
+                keys.push({ field: file[0].fieldname, key: pathObject })
+                await this.s3Service.uploadToS3(pathObject, file[0])
+            }));
+            const response = await this.authUseCase.uploadCustomerFiles(user._id, keys);
+            this.invoke(response, 200, res, 'Los a archivos se subieron correctamente', next);
         } catch (error) {
             next(new ErrorHandler('El codigo no se ha enviado', 500));
         }

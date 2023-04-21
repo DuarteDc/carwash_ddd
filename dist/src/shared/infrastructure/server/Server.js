@@ -14,13 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Server = void 0;
 const express_1 = __importDefault(require("express"));
+const config_1 = require("../../../../config");
 class Server {
     constructor(router) {
         this.router = router;
         this.startServer = () => __awaiter(this, void 0, void 0, function* () {
             return yield new Promise((resolve) => {
-                this.express.listen(process.env.PORT, () => {
-                    console.log(`🚀 Application ${process.env.APP_NAME} running on PORT ${process.env.PORT}`);
+                this.express.listen(config_1.config.PORT, () => {
+                    console.log(`🚀 Application ${config_1.config.APP_NAME} running on PORT ${config_1.config.PORT}`);
                     resolve();
                 });
             });

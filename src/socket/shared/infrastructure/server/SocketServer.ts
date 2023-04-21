@@ -10,9 +10,9 @@ export class SocketServer {
     private readonly httpServer : HttpServer;
 
     constructor(private router : Router) {
-        this.express    = express()
-        this.httpServer = createServer(this.express);
-        this.socket     = new Server(this.httpServer);
+        this.express          = express()
+        this.httpServer       = createServer(this.express);
+        this.socket           = new Server(this.httpServer);
         this.express.use(this.router);
     }
 

@@ -12,8 +12,8 @@ export class Server {
 
     public startServer = async (): Promise<void> => {
         return await new Promise((resolve) => {
-            this.express.listen(process.env.PORT, () => {
-                console.log(`🚀 Application ${process.env.APP_NAME} running on PORT ${process.env.PORT}`);
+            this.express.listen(config.PORT, () => {
+                console.log(`🚀 Application ${config.APP_NAME} running on PORT ${config.PORT}`);
                 resolve();
             })
         });

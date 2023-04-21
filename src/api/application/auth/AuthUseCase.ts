@@ -7,7 +7,8 @@ import { CustomerEntity } from '../../domain/customer/CustomerEntity';
 import { ICustomerAuth } from '../authentication/AuthenticationService';
 
 import { MomentService } from '../../../shared/infrastructure/moment/MomentService';
-import { IPhoneRequest } from './interfaces';
+import { IFileKeys, IPhoneRequest } from './interfaces';
+
 export class AuthUseCase extends Authentication {
 
     constructor(private readonly authRepository: AuthRepository) {
@@ -61,6 +62,10 @@ export class AuthUseCase extends Authentication {
         return await this.authRepository.updateOne(customer_id, { profile_image: photo });
     }
 
+    async updateCustomer(customer_id: string, email: string, fullname: string): Promise<CustomerEntity> {
+        return  await this.authRepository.updateOne(customer_id, { email, fullname });
+    }
+
     async generateToken(customer: CustomerEntity) {
         return await this.generateJWT(customer)
     }
@@ -86,6 +91,16 @@ export class AuthUseCase extends Authentication {
         if(!new MomentService().verifyExpirationDate(expiration_date)) return new ErrorHandler('El código ha expirado', 400);
 
         return await this.authRepository.verifyCode(customer._id);
+    }
+
+
+    async uploadCustomerFiles(customer_id: string, keys: Array<IFileKeys>) {
+        const customer = await this.authRepository.findById(customer_id);
+        keys.forEach(({ key, field }) => {
+            customer[field] = key
+        })
+        await customer.save();
+        return customer;
     }
 
 }

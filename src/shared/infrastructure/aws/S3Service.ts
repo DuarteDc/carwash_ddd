@@ -1,21 +1,26 @@
 import Fs from 'fs';
 import S3 from 'aws-sdk/clients/s3';
 
+import { config } from '../../../../config';
 export class S3Service {
 
-    private region          = process.env.AWS_REGION;
-    private accessKeyId     = process.env.AWS_ACCESS_KEY;
-    private secretAccessKey = process.env.AWS_SECRET_KEY;
-    private bucket          = process.env.AWS_BUCKET_NAME || '';
+    private region          = config.AWS_REGION;
+    private accessKeyId     = config.AWS_ACCESS_KEY;
+    private secretAccessKey = config.AWS_SECRET_KEY;
+    private bucket          = config.AWS_BUCKET_NAME;
+    private environment     = config.S3_ENVIRONMENT;
 
     private s3 : S3; 
 
+    
     constructor () {
+        
         this.s3 = new S3({
             region          : this!.region, 
             accessKeyId     : this!.accessKeyId,
             secretAccessKey : this!.secretAccessKey,
         });
+        
     }
 
     async uploadToS3(key: string, file?: Express.Multer.File) {
@@ -23,7 +28,7 @@ export class S3Service {
             const fileContent = Fs.readFileSync(file!.path);
             const params = {
                 Bucket  : this.bucket,
-                Key     : key,
+                Key     : this.environment + key,
                 Body    : fileContent,
             };
 
@@ -38,7 +43,7 @@ export class S3Service {
         return await this.uploadToS3(key, file).then(async({ message, success }) => {
             const params = {
                 Bucket: process.env!.AWS_BUCKET_NAME || '',
-                Key: key,
+                Key: this.environment + key,
                 Expires: 300,
             }
             const url = await this.s3.getSignedUrl('getObject', params)
