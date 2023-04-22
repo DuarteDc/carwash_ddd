@@ -103,8 +103,8 @@ const CustomerSchema = new Schema<CustomerEntity> ({
 );
 
 CustomerSchema.method('toJSON', function () {
-    const { __v, password, ...client } = this.toObject();
-    return client;
+    const { password, ...customer } = this.toObject();
+    return customer;
 });
 
 CustomerSchema.plugin(mongoosePaginate);

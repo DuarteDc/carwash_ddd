@@ -109,8 +109,8 @@ const CustomerSchema = new mongoose_1.Schema({
     versionKey: false,
 });
 CustomerSchema.method('toJSON', function () {
-    const _a = this.toObject(), { __v, password } = _a, client = __rest(_a, ["__v", "password"]);
-    return client;
+    const _a = this.toObject(), { password } = _a, customer = __rest(_a, ["password"]);
+    return customer;
 });
 CustomerSchema.plugin(mongoose_paginate_v2_1.default);
 const CustomerModel = (0, mongoose_1.model)('Customer', CustomerSchema);

@@ -76,7 +76,7 @@ class AuthController extends ResponseData_1.ResponseData {
     changePassword(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const { password, new_password } = req.body;
-            const user = req.user;
+            const { user } = req;
             try {
                 const response = yield this.authUseCase.changePassword(password, new_password, user);
                 this.invoke(response, 200, res, 'La contraseña se cambio con exito', next);

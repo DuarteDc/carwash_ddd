@@ -12,13 +12,12 @@ export class S3Service {
 
     private s3 : S3; 
 
-    
     constructor () {
         
         this.s3 = new S3({
-            region          : this!.region, 
-            accessKeyId     : this!.accessKeyId,
-            secretAccessKey : this!.secretAccessKey,
+            region          : this.region, 
+            accessKeyId     : this.accessKeyId,
+            secretAccessKey : this.secretAccessKey,
         });
         
     }
@@ -42,9 +41,9 @@ export class S3Service {
     async uploadToS3AndGetUrl(key: string, file?: Express.Multer.File) {
         return await this.uploadToS3(key, file).then(async({ message, success }) => {
             const params = {
-                Bucket: process.env!.AWS_BUCKET_NAME || '',
-                Key: this.environment + key,
-                Expires: 300,
+                Bucket  : this.bucket,
+                Key     : this.environment + key,
+                Expires : 300,
             }
             const url = await this.s3.getSignedUrl('getObject', params)
             return { url, message, success, key }
@@ -53,9 +52,9 @@ export class S3Service {
 
     async getUrlObject(key: string) {
         const params = {
-            Bucket: process.env!.AWS_BUCKET_NAME || '',
-            Key: key,
-            Expires: 300,
+            Bucket  : this.bucket,
+            Key     : key,
+            Expires : 300,
         }
         return await this.s3.getSignedUrl('getObject', params);
     }

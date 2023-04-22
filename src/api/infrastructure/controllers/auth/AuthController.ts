@@ -68,7 +68,7 @@ export class AuthController extends ResponseData {
 
     public async changePassword(req: Request, res: Response, next: NextFunction): Promise<ICustomerAuth | ErrorHandler | void> {
         const { password, new_password } = req.body;
-        const user: CustomerEntity = req.user;
+        const { user } = req;
         try {
             const response = await this.authUseCase.changePassword(password, new_password, user);
             this.invoke(response, 200, res, 'La contraseña se cambio con exito', next);

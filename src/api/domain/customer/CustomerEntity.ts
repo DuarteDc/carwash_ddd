@@ -12,12 +12,12 @@ export interface CustomerEntity {
     fullname         :   string;
     privacity        :   boolean;
     email            :   string;
-    password        ?:   string;
+    password         :   string;
     stripe_customer ?:   string;
     profile_image   ?:   string;
     google          ?:   Boolean;
     phone            :   IPhone;
-    status          ?:   Boolean;
+    status           :   Boolean;
     facturapi_id    ?:   string;
     ine             ?:   string;
     curp            ?:   string;

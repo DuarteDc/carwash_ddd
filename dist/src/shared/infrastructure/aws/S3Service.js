@@ -50,7 +50,7 @@ class S3Service {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.uploadToS3(key, file).then(({ message, success }) => __awaiter(this, void 0, void 0, function* () {
                 const params = {
-                    Bucket: process.env.AWS_BUCKET_NAME || '',
+                    Bucket: this.bucket,
                     Key: this.environment + key,
                     Expires: 300,
                 };
@@ -62,7 +62,7 @@ class S3Service {
     getUrlObject(key) {
         return __awaiter(this, void 0, void 0, function* () {
             const params = {
-                Bucket: process.env.AWS_BUCKET_NAME || '',
+                Bucket: this.bucket,
                 Key: key,
                 Expires: 300,
             };
