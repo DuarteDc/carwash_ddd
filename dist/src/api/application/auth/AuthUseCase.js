@@ -73,7 +73,8 @@ class AuthUseCase extends AuthenticationService_1.Authentication {
     }
     generateToken(customer) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.generateJWT(customer);
+            const user = yield this.authRepository.findById(customer._id);
+            return yield this.generateJWT(user);
         });
     }
     registerPhoneNumber(customer, phone_data, code) {
@@ -103,12 +104,11 @@ class AuthUseCase extends AuthenticationService_1.Authentication {
     }
     uploadCustomerFiles(customer_id, keys) {
         return __awaiter(this, void 0, void 0, function* () {
-            const customer = yield this.authRepository.findById(customer_id);
-            keys.forEach(({ key, field }) => {
+            let customer = yield this.authRepository.findById(customer_id);
+            keys.forEach(({ key, field }) => __awaiter(this, void 0, void 0, function* () {
                 customer[field] = key;
-            });
-            yield customer.save();
-            return customer;
+            }));
+            return yield customer.save();
         });
     }
 }

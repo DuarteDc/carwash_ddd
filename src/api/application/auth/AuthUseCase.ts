@@ -67,7 +67,8 @@ export class AuthUseCase extends Authentication {
     }
 
     async generateToken(customer: CustomerEntity) {
-        return await this.generateJWT(customer)
+        const user = await this.authRepository.findById(customer._id);
+        return await this.generateJWT(user)
     }
 
     async registerPhoneNumber(customer: CustomerEntity, phone_data: IPhoneRequest, code: number) {
@@ -93,14 +94,13 @@ export class AuthUseCase extends Authentication {
         return await this.authRepository.verifyCode(customer._id);
     }
 
-
     async uploadCustomerFiles(customer_id: string, keys: Array<IFileKeys>) {
-        const customer = await this.authRepository.findById(customer_id);
-        keys.forEach(({ key, field }) => {
+        let customer = await this.authRepository.findById(customer_id);
+        keys.forEach(async({ key, field }) => {
             customer[field] = key
         })
-        await customer.save();
-        return customer;
+        return await customer.save();
+        
     }
 
 }

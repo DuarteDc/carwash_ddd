@@ -36,6 +36,7 @@ class AuthController extends ResponseData_1.ResponseData {
             const { email, password } = req.body;
             try {
                 const response = yield this.authUseCase.signIn(email, password);
+                console.log(response);
                 if (!(response instanceof ErrorHandler_1.ErrorHandler) && response.user.profile_image === response.user._id.toString())
                     response.user.profile_image = yield this.s3Service.getUrlObject(response.user.profile_image);
                 this.invoke(response, 200, res, '', next);
@@ -53,7 +54,6 @@ class AuthController extends ResponseData_1.ResponseData {
                 this.invoke(response, 200, res, '', next);
             }
             catch (error) {
-                console.log(error);
                 next(new ErrorHandler_1.ErrorHandler('Hubo un error al iniciar sesión', 500));
             }
         });
@@ -124,8 +124,7 @@ class AuthController extends ResponseData_1.ResponseData {
         return __awaiter(this, void 0, void 0, function* () {
             const { user } = req;
             try {
-                if (user.profile_image === user._id.toString())
-                    user.profile_image = yield this.s3Service.getUrlObject(user.profile_image);
+                // if(user.profile_image === user._id.toString()) user.profile_image = await this.s3Service.getUrlObject(user.profile_image);
                 const response = yield this.authUseCase.generateToken(user);
                 this.invoke(response, 200, res, '', next);
             }
@@ -167,16 +166,18 @@ class AuthController extends ResponseData_1.ResponseData {
             const documents = [files === null || files === void 0 ? void 0 : files.ine, files === null || files === void 0 ? void 0 : files.curp, files === null || files === void 0 ? void 0 : files.prook_address, files === null || files === void 0 ? void 0 : files.criminal_record];
             let keys = [];
             try {
+                if (!(files === null || files === void 0 ? void 0 : files.ine) || !(files === null || files === void 0 ? void 0 : files.curp) || !(files === null || files === void 0 ? void 0 : files.prook_address) || !(files === null || files === void 0 ? void 0 : files.criminal_record))
+                    return next(new ErrorHandler_1.ErrorHandler('los archivos son requeridos', 400));
                 yield Promise.all(documents === null || documents === void 0 ? void 0 : documents.map((file) => __awaiter(this, void 0, void 0, function* () {
                     const pathObject = `${this.path}/${user._id}/${file[0].fieldname}`;
                     keys.push({ field: file[0].fieldname, key: pathObject });
                     yield this.s3Service.uploadToS3(pathObject, file[0]);
                 })));
                 const response = yield this.authUseCase.uploadCustomerFiles(user._id, keys);
-                this.invoke(response, 200, res, 'Los a archivos se subieron correctamente', next);
+                this.invoke(response, 200, res, 'Los archivos se subieron correctamente', next);
             }
             catch (error) {
-                next(new ErrorHandler_1.ErrorHandler('El codigo no se ha enviado', 500));
+                next(new ErrorHandler_1.ErrorHandler('Hubo un error al subir los archivos', 500));
             }
         });
     }

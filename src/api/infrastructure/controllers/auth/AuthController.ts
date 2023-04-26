@@ -36,6 +36,7 @@ export class AuthController extends ResponseData {
         const { email, password } = req.body;
         try {
             const response = await this.authUseCase.signIn(email, password);
+            console.log(response)
             if(!(response instanceof ErrorHandler) && response.user.profile_image === response.user._id.toString()) response.user.profile_image = await this.s3Service.getUrlObject(response.user.profile_image);
             this.invoke(response, 200, res, '', next);
         } catch (error) {
@@ -49,7 +50,6 @@ export class AuthController extends ResponseData {
             const response = await this.authUseCase.signUp({ fullname, email, password });
             this.invoke(response, 200, res, '', next);
         } catch (error) {
-            console.log(error)
             next(new ErrorHandler('Hubo un error al iniciar sesión', 500));
         }
     }
@@ -107,7 +107,7 @@ export class AuthController extends ResponseData {
     public async revalidateToken(req: Request, res: Response, next: NextFunction) {
         const { user } = req;
         try {
-            if(user.profile_image === user._id.toString()) user.profile_image = await this.s3Service.getUrlObject(user.profile_image);
+            // if(user.profile_image === user._id.toString()) user.profile_image = await this.s3Service.getUrlObject(user.profile_image);
             const response = await this.authUseCase.generateToken(user);
             this.invoke(response, 200, res, '', next);
         } catch (error) {
@@ -141,17 +141,20 @@ export class AuthController extends ResponseData {
 
     public async uploadFiles({ files, user}: Request, res: Response, next: NextFunction) {
         const documents = [ files?.ine, files?.curp, files?.prook_address, files?.criminal_record ];
-        let keys = [];
+        let keys: any = [];
         try {
+
+            if(!files?.ine || !files?.curp || !files?.prook_address || !files?.criminal_record) return next(new ErrorHandler('los archivos son requeridos', 400));
+
             await Promise.all(documents?.map(async (file) => {
                 const pathObject = `${this.path}/${user._id}/${file[0].fieldname}`;
                 keys.push({ field: file[0].fieldname, key: pathObject })
                 await this.s3Service.uploadToS3(pathObject, file[0])
             }));
             const response = await this.authUseCase.uploadCustomerFiles(user._id, keys);
-            this.invoke(response, 200, res, 'Los a archivos se subieron correctamente', next);
+            this.invoke(response, 200, res, 'Los archivos se subieron correctamente', next);
         } catch (error) {
-            next(new ErrorHandler('El codigo no se ha enviado', 500));
+            next(new ErrorHandler('Hubo un error al subir los archivos', 500));
         }
     }
 
