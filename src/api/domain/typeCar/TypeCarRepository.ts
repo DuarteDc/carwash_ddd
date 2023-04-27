@@ -1,7 +1,4 @@
-import { MongoRepository } from '../../infrastructure/repository/MongoRepository';
 import { TypeCarEntity, IService } from './TypeCarEntity';
-
-
 export interface TypeCarRepository {
 
     getAllTypeCars(): Promise<TypeCarEntity[] | null>

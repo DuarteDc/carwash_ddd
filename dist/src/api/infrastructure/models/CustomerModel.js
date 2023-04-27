@@ -62,6 +62,11 @@ const CustomerSchema = new mongoose_1.Schema({
         type: String,
         required: false
     },
+    type_customer: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'TypeCustomer',
+        required: true,
+    },
     profile_image: {
         type: String,
         required: false,

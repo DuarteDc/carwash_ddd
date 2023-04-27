@@ -53,13 +53,18 @@ const CustomerSchema = new Schema<CustomerEntity> ({
         type    : String,
         required: false
     },
+    type_customer: {
+        type    :   Schema.Types.ObjectId,
+        ref     :   'TypeCustomer',
+        required:   true,
+    },
     profile_image: {
         type    : String,
         required: false,
     },
     google: {
         type    : Boolean,
-        default: false
+        default : false
     },
     phone: VerifyPhoneNumberSchema,
     // type_client_id: {

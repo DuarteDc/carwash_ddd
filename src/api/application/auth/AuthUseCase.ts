@@ -28,8 +28,11 @@ export class AuthUseCase extends Authentication {
 
     async signUp(body: any): Promise<ICustomerAuth | ErrorHandler | null> {
         let customer = await this.authRepository.findOneItem({ email: body.email });
-
         if (customer) return new ErrorHandler('El usuario ya ha sido registrado', 400);
+        const typeCustomer = await this.authRepository.validateTypeCustomer(body.type_customer);
+        console.log(typeCustomer)
+
+        if(!typeCustomer) return new ErrorHandler('El tipo de usuario no es valido', 400);
 
         const password = await this.encryptPassword(body.password);
         customer = await this.authRepository.createOne({ ...body, password });

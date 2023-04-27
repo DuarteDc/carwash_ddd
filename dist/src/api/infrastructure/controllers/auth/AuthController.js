@@ -48,12 +48,13 @@ class AuthController extends ResponseData_1.ResponseData {
     }
     register(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { email, password, fullname } = req.body;
+            const { email, password, fullname, type_customer } = req.body;
             try {
-                const response = yield this.authUseCase.signUp({ fullname, email, password });
+                const response = yield this.authUseCase.signUp({ fullname, email, password, type_customer });
                 this.invoke(response, 200, res, '', next);
             }
             catch (error) {
+                console.log(error);
                 next(new ErrorHandler_1.ErrorHandler('Hubo un error al iniciar sesión', 500));
             }
         });
@@ -124,7 +125,8 @@ class AuthController extends ResponseData_1.ResponseData {
         return __awaiter(this, void 0, void 0, function* () {
             const { user } = req;
             try {
-                // if(user.profile_image === user._id.toString()) user.profile_image = await this.s3Service.getUrlObject(user.profile_image);
+                if (user.profile_image === user._id.toString())
+                    user.profile_image = yield this.s3Service.getUrlObject(user.profile_image);
                 const response = yield this.authUseCase.generateToken(user);
                 this.invoke(response, 200, res, '', next);
             }

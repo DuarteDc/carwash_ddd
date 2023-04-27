@@ -1,3 +1,5 @@
+import { Schema } from "mongoose";
+
 export interface IPhone {
     code             :   number;
     prefix           :   string;
@@ -14,6 +16,7 @@ export interface CustomerEntity {
     email            :   string;
     password         :   string;
     stripe_customer ?:   string;
+    type_customer    :   Schema.Types.ObjectId;
     profile_image   ?:   string;
     google          ?:   Boolean;
     phone            :   IPhone;

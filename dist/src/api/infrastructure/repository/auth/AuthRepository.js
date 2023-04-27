@@ -8,13 +8,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthRepository = void 0;
 const MongoRepository_1 = require("../MongoRepository");
+const TypeCustomerModel_1 = __importDefault(require("../../models/TypeCustomerModel"));
 class AuthRepository extends MongoRepository_1.MongoRepository {
     constructor(CustomerModel) {
         super(CustomerModel);
         this.CustomerModel = CustomerModel;
+    }
+    validateTypeCustomer(_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield TypeCustomerModel_1.default.findById(_id);
+        });
     }
     verifyCode(_id) {
         return __awaiter(this, void 0, void 0, function* () {

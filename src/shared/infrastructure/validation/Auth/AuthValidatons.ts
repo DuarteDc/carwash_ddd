@@ -5,6 +5,7 @@ import { body,  } from 'express-validator';
 import { RequestValidator } from '../RequestValidator';
 import { multerConfig } from '../../middleware/MulterConfig';
 import validateAuthentication from '../ValidateAuthentication';
+import { isValidObjectId } from 'mongoose';
 
 export class AuthValidations {
 
@@ -21,6 +22,7 @@ export class AuthValidations {
         body('email', 'El correo es requerido').notEmpty().trim().isEmail().withMessage('El correo no es valido'),
         body('password', 'La contraseña es requerida').trim().isLength({ min: 8 }).withMessage('La contraseña debe contener al menos 8 caracteres'),
         body('fullname', 'El nombre es requerido').trim().isLength({ min: 8 }).withMessage('La contraseña debe contener al menos 8 caracteres'),
+        body('type_customer').custom(value => isValidObjectId(value)).withMessage('El tipo de usuario no es valido'),
         RequestValidator
     ];
 

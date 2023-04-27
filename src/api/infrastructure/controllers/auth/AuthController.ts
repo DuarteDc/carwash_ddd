@@ -45,11 +45,12 @@ export class AuthController extends ResponseData {
     }
 
     public async register(req: Request, res: Response, next: NextFunction): Promise<ICustomerAuth | ErrorHandler | void> {
-        const { email, password, fullname } = req.body;
+        const { email, password, fullname, type_customer } = req.body;
         try {
-            const response = await this.authUseCase.signUp({ fullname, email, password });
+            const response = await this.authUseCase.signUp({ fullname, email, password, type_customer });
             this.invoke(response, 200, res, '', next);
         } catch (error) {
+            console.log(error)
             next(new ErrorHandler('Hubo un error al iniciar sesión', 500));
         }
     }
@@ -107,7 +108,7 @@ export class AuthController extends ResponseData {
     public async revalidateToken(req: Request, res: Response, next: NextFunction) {
         const { user } = req;
         try {
-            // if(user.profile_image === user._id.toString()) user.profile_image = await this.s3Service.getUrlObject(user.profile_image);
+            if(user.profile_image === user._id.toString()) user.profile_image = await this.s3Service.getUrlObject(user.profile_image);
             const response = await this.authUseCase.generateToken(user);
             this.invoke(response, 200, res, '', next);
         } catch (error) {

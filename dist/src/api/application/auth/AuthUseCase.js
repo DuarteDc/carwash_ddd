@@ -34,6 +34,10 @@ class AuthUseCase extends AuthenticationService_1.Authentication {
             let customer = yield this.authRepository.findOneItem({ email: body.email });
             if (customer)
                 return new ErrorHandler_1.ErrorHandler('El usuario ya ha sido registrado', 400);
+            const typeCustomer = yield this.authRepository.validateTypeCustomer(body.type_customer);
+            console.log(typeCustomer);
+            if (!typeCustomer)
+                return new ErrorHandler_1.ErrorHandler('El tipo de usuario no es valido', 400);
             const password = yield this.encryptPassword(body.password);
             customer = yield this.authRepository.createOne(Object.assign(Object.assign({}, body), { password }));
             return yield this.generateJWT(customer);
