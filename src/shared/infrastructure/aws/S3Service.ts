@@ -53,7 +53,7 @@ export class S3Service {
     async getUrlObject(key: string) {
         const params = {
             Bucket  : this.bucket,
-            Key     : key,
+            Key     :  this.environment + key,
             Expires : 300,
         }
         return await this.s3.getSignedUrl('getObject', params);

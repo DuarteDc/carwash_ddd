@@ -14,12 +14,12 @@ class MongoRepository {
     constructor(MODEL) {
         this.MODEL = MODEL;
     }
-    findAll() {
+    findAll(populateConfig) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.MODEL.find();
+            return yield this.MODEL.find().populate(populateConfig);
         });
     }
-    findById(_id) {
+    findById(_id, populateConfig) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.MODEL.findById(_id);
         });
@@ -36,9 +36,9 @@ class MongoRepository {
             return newObject;
         });
     }
-    findOneItem(query) {
+    findOneItem(query, populateConfig) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.MODEL.findOne(query);
+            return yield this.MODEL.findOne(query).populate(populateConfig);
         });
     }
 }

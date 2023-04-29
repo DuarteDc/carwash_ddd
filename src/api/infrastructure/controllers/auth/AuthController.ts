@@ -36,8 +36,7 @@ export class AuthController extends ResponseData {
         const { email, password } = req.body;
         try {
             const response = await this.authUseCase.signIn(email, password);
-            console.log(response)
-            if(!(response instanceof ErrorHandler) && response.user.profile_image === response.user._id.toString()) response.user.profile_image = await this.s3Service.getUrlObject(response.user.profile_image);
+            if(!(response instanceof ErrorHandler)) response.user.profile_image = await this.s3Service.getUrlObject(response.user.profile_image);
             this.invoke(response, 200, res, '', next);
         } catch (error) {
             next(new ErrorHandler('Hubo un error al iniciar sesión', 500));
@@ -56,10 +55,10 @@ export class AuthController extends ResponseData {
     }
 
     public async loginWithGoogle(req: Request, res: Response, next: NextFunction): Promise<ICustomerAuth | ErrorHandler | void> {
-        const { idToken } = req.body;
+        const { idToken, type_customer } = req.body;
         try {
-            const response = await this.authUseCase.signInWithGoogle(idToken);
-            if(response.user.profile_image === response.user._id.toString()) response.user.profile_image = await this.s3Service.getUrlObject(response.user.profile_image);
+            const response = await this.authUseCase.signInWithGoogle(idToken, type_customer);
+            response.user.profile_image = await this.s3Service.getUrlObject(response.user.profile_image);
             this.invoke(response, 200, res, '', next);
         } catch (error) {
             console.log(error)
@@ -85,6 +84,7 @@ export class AuthController extends ResponseData {
             const { message, key, url, success } = await this.s3Service.uploadToS3AndGetUrl(pathObject, req.file);
             if(!success) return new ErrorHandler('Hubo un error al subir la imagen', 400)
             const response = await this.authUseCase.updateProfilePhoto(key, user._id);
+            console.log(response)
             response.profile_image = url;
             this.invoke(response, 200, res, message, next);
         } catch (error) {
@@ -98,7 +98,7 @@ export class AuthController extends ResponseData {
         const { email, fullname } = req.body;
         try {
             const response = await this.authUseCase.updateCustomer(user._id, email, fullname);
-            if(response.profile_image === response._id.toString()) response.profile_image = await this.s3Service.getUrlObject(response.profile_image);
+            response.profile_image = await this.s3Service.getUrlObject(response?.profile_image);
             this.invoke(response, 200, res, 'El usuario se actualizo con exito', next);
         } catch (error) {
             next(new ErrorHandler('Hubo un error al actualizar la información', 500));
@@ -108,8 +108,8 @@ export class AuthController extends ResponseData {
     public async revalidateToken(req: Request, res: Response, next: NextFunction) {
         const { user } = req;
         try {
-            if(user.profile_image === user._id.toString()) user.profile_image = await this.s3Service.getUrlObject(user.profile_image);
             const response = await this.authUseCase.generateToken(user);
+            response.user.profile_image = await this.s3Service.getUrlObject(response.user?.profile_image);
             this.invoke(response, 200, res, '', next);
         } catch (error) {
             next(new ErrorHandler('Hubo un error al generar el token', 500));

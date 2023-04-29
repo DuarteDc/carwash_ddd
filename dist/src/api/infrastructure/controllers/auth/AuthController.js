@@ -36,8 +36,7 @@ class AuthController extends ResponseData_1.ResponseData {
             const { email, password } = req.body;
             try {
                 const response = yield this.authUseCase.signIn(email, password);
-                console.log(response);
-                if (!(response instanceof ErrorHandler_1.ErrorHandler) && response.user.profile_image === response.user._id.toString())
+                if (!(response instanceof ErrorHandler_1.ErrorHandler))
                     response.user.profile_image = yield this.s3Service.getUrlObject(response.user.profile_image);
                 this.invoke(response, 200, res, '', next);
             }
@@ -61,11 +60,10 @@ class AuthController extends ResponseData_1.ResponseData {
     }
     loginWithGoogle(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { idToken } = req.body;
+            const { idToken, type_customer } = req.body;
             try {
-                const response = yield this.authUseCase.signInWithGoogle(idToken);
-                if (response.user.profile_image === response.user._id.toString())
-                    response.user.profile_image = yield this.s3Service.getUrlObject(response.user.profile_image);
+                const response = yield this.authUseCase.signInWithGoogle(idToken, type_customer);
+                response.user.profile_image = yield this.s3Service.getUrlObject(response.user.profile_image);
                 this.invoke(response, 200, res, '', next);
             }
             catch (error) {
@@ -97,6 +95,7 @@ class AuthController extends ResponseData_1.ResponseData {
                 if (!success)
                     return new ErrorHandler_1.ErrorHandler('Hubo un error al subir la imagen', 400);
                 const response = yield this.authUseCase.updateProfilePhoto(key, user._id);
+                console.log(response);
                 response.profile_image = url;
                 this.invoke(response, 200, res, message, next);
             }
@@ -112,8 +111,7 @@ class AuthController extends ResponseData_1.ResponseData {
             const { email, fullname } = req.body;
             try {
                 const response = yield this.authUseCase.updateCustomer(user._id, email, fullname);
-                if (response.profile_image === response._id.toString())
-                    response.profile_image = yield this.s3Service.getUrlObject(response.profile_image);
+                response.profile_image = yield this.s3Service.getUrlObject(response === null || response === void 0 ? void 0 : response.profile_image);
                 this.invoke(response, 200, res, 'El usuario se actualizo con exito', next);
             }
             catch (error) {
@@ -122,12 +120,12 @@ class AuthController extends ResponseData_1.ResponseData {
         });
     }
     revalidateToken(req, res, next) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const { user } = req;
             try {
-                if (user.profile_image === user._id.toString())
-                    user.profile_image = yield this.s3Service.getUrlObject(user.profile_image);
                 const response = yield this.authUseCase.generateToken(user);
+                response.user.profile_image = yield this.s3Service.getUrlObject((_a = response.user) === null || _a === void 0 ? void 0 : _a.profile_image);
                 this.invoke(response, 200, res, '', next);
             }
             catch (error) {

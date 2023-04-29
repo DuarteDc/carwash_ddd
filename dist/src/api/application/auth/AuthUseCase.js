@@ -34,16 +34,12 @@ class AuthUseCase extends AuthenticationService_1.Authentication {
             let customer = yield this.authRepository.findOneItem({ email: body.email });
             if (customer)
                 return new ErrorHandler_1.ErrorHandler('El usuario ya ha sido registrado', 400);
-            const typeCustomer = yield this.authRepository.validateTypeCustomer(body.type_customer);
-            console.log(typeCustomer);
-            if (!typeCustomer)
-                return new ErrorHandler_1.ErrorHandler('El tipo de usuario no es valido', 400);
             const password = yield this.encryptPassword(body.password);
             customer = yield this.authRepository.createOne(Object.assign(Object.assign({}, body), { password }));
             return yield this.generateJWT(customer);
         });
     }
-    signInWithGoogle(idToken) {
+    signInWithGoogle(idToken, type_customer) {
         return __awaiter(this, void 0, void 0, function* () {
             let { fullname, email, picture } = yield this.validateGoogleToken(idToken);
             let customer = yield this.authRepository.findOneItem({ email });
@@ -51,7 +47,7 @@ class AuthUseCase extends AuthenticationService_1.Authentication {
                 return yield this.generateJWT(customer);
             let password = this.generateRandomPassword();
             password = this.encryptPassword(password);
-            customer = yield this.authRepository.createOne({ fullname, email, profile_image: picture, password, google: true });
+            customer = yield this.authRepository.createOne({ fullname, email, profile_image: picture, password, google: true, type_customer });
             return yield this.generateJWT(customer);
         });
     }

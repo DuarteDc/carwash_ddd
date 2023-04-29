@@ -63,7 +63,7 @@ class S3Service {
         return __awaiter(this, void 0, void 0, function* () {
             const params = {
                 Bucket: this.bucket,
-                Key: key,
+                Key: this.environment + key,
                 Expires: 300,
             };
             return yield this.s3.getSignedUrl('getObject', params);

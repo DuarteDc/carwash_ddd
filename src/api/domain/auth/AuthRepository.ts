@@ -6,5 +6,6 @@ export interface AuthRepository extends MongoRepository {
     validatePhoneNumber(phone: number, customer_id: string): Promise<CustomerEntity | null>
     verifyCode(_id: string): Promise<CustomerEntity | null>
     validateTypeCustomer(_id: string): Promise<TypeCustomerEntity | null>
+
     
 }

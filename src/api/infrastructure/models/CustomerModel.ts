@@ -54,9 +54,9 @@ const CustomerSchema = new Schema<CustomerEntity> ({
         required: false
     },
     type_customer: {
-        type    :   Schema.Types.ObjectId,
-        ref     :   'TypeCustomer',
-        required:   true,
+        type    :   String,
+        enum    :   ['0', '1'],
+        default:    '0',
     },
     profile_image: {
         type    : String,
