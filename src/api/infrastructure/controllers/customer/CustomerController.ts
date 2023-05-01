@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { ErrorHandler } from '../../../../shared/domain/ErrorHandler';
+import { S3Service } from '../../../../shared/infrastructure/aws/S3Service';
 
 import { ResponseData } from '../../../../shared/infrastructure/validation/ResponseData';
 
@@ -7,8 +8,9 @@ import { CustomerUseCase } from '../../../application/customer/CustomerUseCase';
 
 export class CustomerController extends ResponseData {
 
+    protected path = '/customers'; 
 
-    constructor(private customerUseCase: CustomerUseCase) {
+    constructor(private customerUseCase: CustomerUseCase, s3Service: S3Service) {
         super();
         this.getAllCustomers    =    this.getAllCustomers.bind(this);
         this.createCustomer     =    this.createCustomer.bind(this);
@@ -28,7 +30,7 @@ export class CustomerController extends ResponseData {
 
     public async getCustomerDetail(req: Request, res: Response, next: NextFunction) {
         const { id } = req.params;
-
+        
         try {
             const customer = await this.customerUseCase.getDetailCustomer(id);
             this.invoke(customer, 200, res, '', next)

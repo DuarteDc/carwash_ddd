@@ -13,9 +13,10 @@ exports.CustomerController = void 0;
 const ErrorHandler_1 = require("../../../../shared/domain/ErrorHandler");
 const ResponseData_1 = require("../../../../shared/infrastructure/validation/ResponseData");
 class CustomerController extends ResponseData_1.ResponseData {
-    constructor(customerUseCase) {
+    constructor(customerUseCase, s3Service) {
         super();
         this.customerUseCase = customerUseCase;
+        this.path = '/customers';
         this.getAllCustomers = this.getAllCustomers.bind(this);
         this.createCustomer = this.createCustomer.bind(this);
         this.getCustomerDetail = this.getCustomerDetail.bind(this);

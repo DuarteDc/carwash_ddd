@@ -16,7 +16,7 @@ import { generateRandomCode } from '../../../../shared/infrastructure/validation
 import { IPhoneRequest } from '../../../application/auth/interfaces';
 
 export class AuthController extends ResponseData {
-    protected path = '/customers'
+    protected path = '/customers';
 
     constructor(private readonly authUseCase: AuthUseCase, private readonly s3Service: S3Service, private readonly twilioService: TwilioService) {
         super();

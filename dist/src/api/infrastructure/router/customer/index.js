@@ -8,10 +8,12 @@ const CustomerUseCase_1 = require("../../../application/customer/CustomerUseCase
 const CustomerController_1 = require("../../controllers/customer/CustomerController");
 const CustomerRepository_1 = require("../../repository/customer/CustomerRepository");
 const CustomerModel_1 = __importDefault(require("../../models/CustomerModel"));
+const S3Service_1 = require("../../../../shared/infrastructure/aws/S3Service");
 const customerRouter = (0, express_1.Router)();
 const customerRepository = new CustomerRepository_1.CustomerRepository(CustomerModel_1.default);
 const customerUserCase = new CustomerUseCase_1.CustomerUseCase(customerRepository);
-const customerController = new CustomerController_1.CustomerController(customerUserCase);
+const s3Service = new S3Service_1.S3Service();
+const customerController = new CustomerController_1.CustomerController(customerUserCase, s3Service);
 customerRouter
     .get('/', customerController.getAllCustomers)
     .get('/:id', customerController.getCustomerDetail)

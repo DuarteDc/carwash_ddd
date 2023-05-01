@@ -8,6 +8,7 @@ import { IAuth } from '../authentication/AuthenticationService';
 
 import { MomentService } from '../../../shared/infrastructure/moment/MomentService';
 import { IFileKeys,IPhoneRequest } from './interfaces';
+import { UserEntity } from '../../domain/user/UserEntity';
 export class AuthUseCase extends Authentication {
 
     constructor(private readonly authRepository: AuthRepository) {
@@ -48,7 +49,7 @@ export class AuthUseCase extends Authentication {
         return await this.generateJWT(customer);
     }
 
-    async changePassword(password: string,newPassword: string,user: CustomerEntity): Promise<ErrorHandler | IAuth | null> {
+    async changePassword(password: string,newPassword: string,user: CustomerEntity | UserEntity): Promise<ErrorHandler | IAuth | null> {
         let customer = await this.authRepository.findById(user._id);
         const currentPassword = this.decryptPassword(password,customer.password);
         if (!currentPassword) return new ErrorHandler('Error la contraseña actual no es valida',400);
@@ -64,11 +65,11 @@ export class AuthUseCase extends Authentication {
         return await this.authRepository.updateOne(customer_id,{ email,fullname });
     }
 
-    async generateToken(customer: CustomerEntity) {
+    async generateToken(customer: CustomerEntity | UserEntity) {
         return await this.generateJWT(customer)
     }
 
-    async registerPhoneNumber(customer: CustomerEntity,phone_data: IPhoneRequest,code: number) {
+    async registerPhoneNumber(customer: CustomerEntity | UserEntity,phone_data: IPhoneRequest,code: number) {
         const { phone_number,prefix } = phone_data;
 
         const phoneData = await this.authRepository.validatePhoneNumber(phone_number,customer._id);

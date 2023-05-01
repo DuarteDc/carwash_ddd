@@ -13,7 +13,7 @@ export abstract class MongoRepository {
     }
 
     public async findById(_id: String, populateConfig?: any): Promise<any> {
-        return await this.MODEL.findById(_id, { status: true });
+        return await this.MODEL.findById(_id);
     }
 
     public async updateOne(_id: String, updated: object): Promise<any> {

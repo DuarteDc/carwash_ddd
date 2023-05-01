@@ -21,7 +21,7 @@ class MongoRepository {
     }
     findById(_id, populateConfig) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.MODEL.findById(_id, { status: true });
+            return yield this.MODEL.findById(_id);
         });
     }
     updateOne(_id, updated) {
