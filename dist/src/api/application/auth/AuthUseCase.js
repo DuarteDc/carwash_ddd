@@ -73,8 +73,7 @@ class AuthUseCase extends AuthenticationService_1.Authentication {
     }
     generateToken(customer) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield this.authRepository.findById(customer._id);
-            return yield this.generateJWT(user);
+            return yield this.generateJWT(customer);
         });
     }
     registerPhoneNumber(customer, phone_data, code) {

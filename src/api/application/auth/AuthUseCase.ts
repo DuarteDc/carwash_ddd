@@ -4,7 +4,7 @@ import { AuthRepository } from '../../domain/auth/AuthRepository';
 import { ErrorHandler } from '../../../shared/domain/ErrorHandler';
 
 import { CustomerEntity } from '../../domain/customer/CustomerEntity';
-import { ICustomerAuth } from '../authentication/AuthenticationService';
+import { IAuth } from '../authentication/AuthenticationService';
 
 import { MomentService } from '../../../shared/infrastructure/moment/MomentService';
 import { IFileKeys,IPhoneRequest } from './interfaces';
@@ -14,7 +14,7 @@ export class AuthUseCase extends Authentication {
         super();
     }
 
-    async signIn(email: string,password: string): Promise<ErrorHandler | ICustomerAuth> {
+    async signIn(email: string,password: string): Promise<ErrorHandler | IAuth> {
         let customer = await this.authRepository.findOneItem({ email }, );
 
         if (!customer) return new ErrorHandler('El usuario o contraseña no son validos',400);
@@ -25,7 +25,7 @@ export class AuthUseCase extends Authentication {
         return await this.generateJWT(customer);
     }
 
-    async signUp(body: any): Promise<ICustomerAuth | ErrorHandler | null> {
+    async signUp(body: any): Promise<IAuth | ErrorHandler | null> {
         let customer = await this.authRepository.findOneItem({ email: body.email });
         if (customer) return new ErrorHandler('El usuario ya ha sido registrado',400);
 
@@ -34,7 +34,7 @@ export class AuthUseCase extends Authentication {
         return await this.generateJWT(customer);
     }
 
-    async signInWithGoogle(idToken: string, type_customer: string): Promise<ICustomerAuth> {
+    async signInWithGoogle(idToken: string, type_customer: string): Promise<IAuth> {
         let { fullname,email,picture } = await this.validateGoogleToken(idToken);
         let customer = await this.authRepository.findOneItem({ email });
 
@@ -48,7 +48,7 @@ export class AuthUseCase extends Authentication {
         return await this.generateJWT(customer);
     }
 
-    async changePassword(password: string,newPassword: string,user: CustomerEntity): Promise<ErrorHandler | ICustomerAuth | null> {
+    async changePassword(password: string,newPassword: string,user: CustomerEntity): Promise<ErrorHandler | IAuth | null> {
         let customer = await this.authRepository.findById(user._id);
         const currentPassword = this.decryptPassword(password,customer.password);
         if (!currentPassword) return new ErrorHandler('Error la contraseña actual no es valida',400);
@@ -65,8 +65,7 @@ export class AuthUseCase extends Authentication {
     }
 
     async generateToken(customer: CustomerEntity) {
-        const user = await this.authRepository.findById(customer._id);
-        return await this.generateJWT(user)
+        return await this.generateJWT(customer)
     }
 
     async registerPhoneNumber(customer: CustomerEntity,phone_data: IPhoneRequest,code: number) {

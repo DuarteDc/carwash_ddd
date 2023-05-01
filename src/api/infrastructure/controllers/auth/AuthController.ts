@@ -4,7 +4,7 @@ import { CustomerEntity } from '../../../domain/customer/CustomerEntity';
 import { ErrorHandler } from '../../../../shared/domain/ErrorHandler';
 
 import { AuthUseCase } from '../../../application/auth/AuthUseCase';
-import { ICustomerAuth } from '../../../application/authentication/AuthenticationService';
+import { IAuth } from '../../../application/authentication/AuthenticationService';
 
 import { S3Service } from '../../../../shared/infrastructure/aws/S3Service';
 import { TwilioService } from '../../../../shared/infrastructure/twilio/TwilioService';
@@ -32,7 +32,7 @@ export class AuthController extends ResponseData {
         this.uploadFiles                =   this.uploadFiles.bind(this);
     }
 
-    public async login(req: Request, res: Response, next: NextFunction): Promise<ICustomerAuth | ErrorHandler | void> {
+    public async login(req: Request, res: Response, next: NextFunction): Promise<IAuth | ErrorHandler | void> {
         const { email, password } = req.body;
         try {
             const response = await this.authUseCase.signIn(email, password);
@@ -43,7 +43,7 @@ export class AuthController extends ResponseData {
         }
     }
 
-    public async register(req: Request, res: Response, next: NextFunction): Promise<ICustomerAuth | ErrorHandler | void> {
+    public async register(req: Request, res: Response, next: NextFunction): Promise<IAuth | ErrorHandler | void> {
         const { email, password, fullname, type_customer } = req.body;
         try {
             const response = await this.authUseCase.signUp({ fullname, email, password, type_customer });
@@ -54,7 +54,7 @@ export class AuthController extends ResponseData {
         }
     }
 
-    public async loginWithGoogle(req: Request, res: Response, next: NextFunction): Promise<ICustomerAuth | ErrorHandler | void> {
+    public async loginWithGoogle(req: Request, res: Response, next: NextFunction): Promise<IAuth | ErrorHandler | void> {
         const { idToken, type_customer } = req.body;
         try {
             const response = await this.authUseCase.signInWithGoogle(idToken, type_customer);
@@ -66,7 +66,7 @@ export class AuthController extends ResponseData {
         }
     }
 
-    public async changePassword(req: Request, res: Response, next: NextFunction): Promise<ICustomerAuth | ErrorHandler | void> {
+    public async changePassword(req: Request, res: Response, next: NextFunction): Promise<IAuth | ErrorHandler | void> {
         const { password, new_password } = req.body;
         const { user } = req;
         try {
@@ -109,6 +109,7 @@ export class AuthController extends ResponseData {
         const { user } = req;
         try {
             const response = await this.authUseCase.generateToken(user);
+            console.log(response)
             response.user.profile_image = await this.s3Service.getUrlObject(response.user?.profile_image);
             this.invoke(response, 200, res, '', next);
         } catch (error) {

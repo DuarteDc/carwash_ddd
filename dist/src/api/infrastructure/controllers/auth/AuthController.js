@@ -125,6 +125,7 @@ class AuthController extends ResponseData_1.ResponseData {
             const { user } = req;
             try {
                 const response = yield this.authUseCase.generateToken(user);
+                console.log(response);
                 response.user.profile_image = yield this.s3Service.getUrlObject((_a = response.user) === null || _a === void 0 ? void 0 : _a.profile_image);
                 this.invoke(response, 200, res, '', next);
             }

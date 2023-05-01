@@ -5,7 +5,6 @@ import { body,  } from 'express-validator';
 import { RequestValidator } from '../RequestValidator';
 import { multerConfig } from '../../middleware/MulterConfig';
 import validateAuthentication from '../ValidateAuthentication';
-import { isValidObjectId } from 'mongoose';
 
 export class AuthValidations {
 

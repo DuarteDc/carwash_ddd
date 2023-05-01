@@ -16,12 +16,12 @@ class MongoRepository {
     }
     findAll(populateConfig) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.MODEL.find().populate(populateConfig);
+            return yield this.MODEL.find({ status: true }).populate(populateConfig);
         });
     }
     findById(_id, populateConfig) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.MODEL.findById(_id);
+            return yield this.MODEL.findById(_id, { status: true });
         });
     }
     updateOne(_id, updated) {
@@ -38,7 +38,7 @@ class MongoRepository {
     }
     findOneItem(query, populateConfig) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.MODEL.findOne(query).populate(populateConfig);
+            return yield this.MODEL.findOne(Object.assign(Object.assign({}, query), { status: true })).populate(populateConfig);
         });
     }
 }

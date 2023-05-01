@@ -5,6 +5,7 @@ import Generator from 'generate-password';
 import { OAuth2Client } from 'google-auth-library';
 
 import { CustomerEntity } from '../../domain/customer/CustomerEntity';
+import { UserEntity } from '../../domain/user/UserEntity';
 
 export interface IGoogle {
     fullname    : string | undefined;
@@ -12,8 +13,8 @@ export interface IGoogle {
     picture     : string | undefined;
 }
 
-export interface ICustomerAuth {
-    user    : CustomerEntity;
+export interface IAuth {
+    user    : CustomerEntity | UserEntity;
     token?  : string;
 }
 
@@ -22,7 +23,7 @@ export class Authentication {
     private googleKey   = process.env.GOOGLE_CLIENT_ID;
     private client      = new OAuth2Client(this.googleKey);
 
-    protected async generateJWT(user: CustomerEntity): Promise<ICustomerAuth> {
+    protected async generateJWT(user: CustomerEntity): Promise<IAuth> {
         return new Promise((resolve, reject) => {
             const payload: string | object | Buffer = { user };
 
