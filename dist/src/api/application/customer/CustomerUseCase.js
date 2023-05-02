@@ -44,5 +44,13 @@ class CustomerUseCase {
             return yield this.customerRepository.updateOne(_id, updated);
         });
     }
+    becomeAPartner(customer_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const customer = yield this.customerRepository.findById(customer_id);
+            if (!customer)
+                return new ErrorHandler_1.ErrorHandler('El usuario no es correcto', 400);
+            return yield this.customerRepository.updateOne(customer_id, { type: '1' });
+        });
+    }
 }
 exports.CustomerUseCase = CustomerUseCase;

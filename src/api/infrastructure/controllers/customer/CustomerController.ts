@@ -77,4 +77,15 @@ export class CustomerController extends ResponseData {
 
     }
 
+    public async convertUserToPartner(req: Request, res: Response, next: NextFunction) {
+        const { user } = req;
+        try {
+            const customer = await this.customerUseCase.becomeAPartner(user._id);
+            this.invoke(customer, 200, res, 'Felicidades ahora formas parte de nuestra familia', next);
+        } catch (error) {
+            console.log(error);
+            next(new ErrorHandler('Hubo un error al eliminar el usuario', 500));
+        }
+    }
+
 }

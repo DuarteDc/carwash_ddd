@@ -85,5 +85,18 @@ class CustomerController extends ResponseData_1.ResponseData {
             }
         });
     }
+    convertUserToPartner(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { user } = req;
+            try {
+                const customer = yield this.customerUseCase.becomeAPartner(user._id);
+                this.invoke(customer, 200, res, 'Felicidades ahora formas parte de nuestra familia', next);
+            }
+            catch (error) {
+                console.log(error);
+                next(new ErrorHandler_1.ErrorHandler('Hubo un error al eliminar el usuario', 500));
+            }
+        });
+    }
 }
 exports.CustomerController = CustomerController;
